@@ -1,12 +1,10 @@
+from app.enterprise_knowledge_service.integration.consumers import knowledge_for_capability_discovery
 from app.capability_discovery.v2.constants import (
     FORBIDDEN_EXAMPLE_PATTERNS,
     MAX_CAPABILITIES,
     MAX_EXAMPLES,
     MAX_RESPONSE_LINES,
-    V2_CAPABILITIES,
-    V2_EXAMPLES,
 )
-from app.capability_discovery.v2.formatter import build_v2_answer
 from app.capability_discovery.v2.metrics import contains_forbidden_term
 from app.utils.text_normalizer import normalize_for_matching
 
@@ -57,9 +55,12 @@ def validate_v2_discovery_result(
 
 
 def build_validated_v2_discovery_payload() -> tuple[str, list[str], list[str]]:
-    capabilities = list(V2_CAPABILITIES)
-    example_questions = list(V2_EXAMPLES)
-    answer = build_v2_answer(capabilities, example_questions)
+    payload = knowledge_for_capability_discovery()
+    answer, capabilities, example_questions = (
+        payload.answer,
+        payload.capabilities,
+        payload.examples,
+    )
     validate_v2_discovery_result(
         answer=answer,
         capabilities=capabilities,

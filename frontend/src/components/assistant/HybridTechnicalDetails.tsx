@@ -25,14 +25,14 @@ export function HybridTechnicalDetails({ message }: HybridTechnicalDetailsProps)
     },
     { label: es.chat.confidence, value: formatConfidence(hybrid.confidence) },
     ...(hybrid.sessionId
-      ? [{ label: 'Session ID', value: hybrid.sessionId }]
+      ? [{ label: es.chat.sessionId, value: hybrid.sessionId }]
       : []),
     {
-      label: 'Pending clarification',
+      label: es.chat.pendingClarification,
       value: hybrid.pendingClarification ? 'Sí' : 'No',
     },
     {
-      label: 'Clarification resolved',
+      label: es.chat.clarificationResolved,
       value:
         hybrid.clarificationResolved === undefined
           ? '—'

@@ -1,13 +1,8 @@
+from app.enterprise_knowledge_service.integration.consumers import knowledge_for_capability_discovery
 from app.capability_discovery.engine import CapabilityDiscoveryEngine
-
-from app.capability_discovery.v2.constants import V2_CAPABILITIES, V2_EXAMPLES
-
 from app.capability_discovery.v2.validation import (
-
     CapabilityDiscoveryV2ValidationError,
-
     validate_v2_discovery_result,
-
 )
 
 from app.query_engine.query_planner import BusinessQueryPlanner
@@ -62,15 +57,18 @@ def validate_capability_discovery_health(
 
 
 
-    if result.capabilities != list(V2_CAPABILITIES):
+    payload = knowledge_for_capability_discovery()
+    expected_capabilities, expected_examples = payload.capabilities, payload.examples
 
-        raise CapabilityDiscoveryHealthError("Capacidades v2 no coinciden con el catálogo UX")
+    if result.capabilities != expected_capabilities:
+        raise CapabilityDiscoveryHealthError(
+            "Capacidades no coinciden con knowledge_pack/executive/capacidades-asistente.md"
+        )
 
-
-
-    if result.example_questions != list(V2_EXAMPLES):
-
-        raise CapabilityDiscoveryHealthError("Ejemplos v2 no coinciden con el catálogo UX")
+    if result.example_questions != expected_examples:
+        raise CapabilityDiscoveryHealthError(
+            "Ejemplos no coinciden con knowledge_pack/executive/capacidades-asistente.md"
+        )
 
 
 

@@ -251,7 +251,7 @@ def test_query_plan_endpoint_requires_question(client: TestClient) -> None:
 @pytest.mark.parametrize(
     ("question", "expected_type"),
     [
-        ("¿Qué datos tienes?", "SYSTEM_CAPABILITIES"),
+        ("¿Qué datos tienes?", "DATASET_INFO"),
         ("¿Qué puedo preguntarte?", "SYSTEM_CAPABILITIES"),
         ("¿Cuál es el periodo de los datos?", "DATA_COVERAGE"),
         ("¿Qué fechas cubren los datos?", "DATA_COVERAGE"),
@@ -274,7 +274,7 @@ def test_plan_system_capability_questions_from_question(
 @pytest.mark.parametrize(
     ("question", "expected_type"),
     [
-        ("¿Qué datos tienes?", "SYSTEM_CAPABILITIES"),
+        ("¿Qué datos tienes?", "DATASET_INFO"),
         ("¿Qué puedo preguntarte?", "SYSTEM_CAPABILITIES"),
         ("¿Cuál es el periodo de los datos?", "DATA_COVERAGE"),
         ("¿Qué fechas cubren los datos?", "DATA_COVERAGE"),

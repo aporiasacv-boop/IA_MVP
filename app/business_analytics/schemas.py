@@ -115,3 +115,15 @@ class CoverageReportResponse(BaseModel):
     average_cost_per_question: float = 0.0
     hallucination_guard_triggered: int = 0
     llm_fallbacks: int = 0
+    knowledge_runtime_hits: int = 0
+    knowledge_runtime_misses: int = 0
+    knowledge_runtime_cache_hits: int = 0
+    knowledge_runtime_reload_time: float = 0.0
+    knowledge_runtime_last_refresh: datetime | None = None
+    knowledge_runtime_documents: int = 0
+    knowledge_requests: int = 0
+    knowledge_provider_distribution: dict[str, int] = Field(default_factory=dict)
+    cache_hit_rate: float = 0.0
+    cache_size: int = 0
+    average_search_time: float = 0.0
+    knowledge_sources: list[str] = Field(default_factory=list)

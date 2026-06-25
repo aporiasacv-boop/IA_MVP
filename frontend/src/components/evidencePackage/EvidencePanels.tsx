@@ -98,9 +98,9 @@ function ItemTable({
         <table className="min-w-full text-left text-[11px]">
           <thead className="bg-surface-elevated text-muted">
             <tr>
-              <th className="px-2 py-1.5">Key</th>
-              <th className="px-2 py-1.5">Source</th>
-              <th className="px-2 py-1.5">Conf.</th>
+              <th className="px-2 py-1.5">{es.evidencePackage.detail.tableKey}</th>
+              <th className="px-2 py-1.5">{es.evidencePackage.detail.tableSource}</th>
+              <th className="px-2 py-1.5">{es.evidencePackage.detail.tableConfidence}</th>
             </tr>
           </thead>
           <tbody>

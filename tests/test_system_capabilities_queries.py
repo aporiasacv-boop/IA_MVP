@@ -49,10 +49,40 @@ def test_system_capability_questions_do_not_plan_as_unsupported(
     assert result.query_type != BusinessQueryType.UNSUPPORTED
 
 
+def test_hybrid_router_redirects_system_capabilities_to_business_knowledge() -> None:
+    intent_builder = MagicMock()
+    intent_builder.build.return_value = MagicMock(confidence=1.0)
+
+    query_planner = MagicMock()
+    query_planner.plan.return_value = BusinessQuery(
+        query_type=BusinessQueryType.SYSTEM_CAPABILITIES,
+    )
+
+    query_executor = MagicMock()
+    response_engine = MagicMock()
+    legacy_handler = MagicMock()
+
+    router = HybridChatRouter(
+        intent_builder,
+        query_planner,
+        query_executor,
+        response_engine,
+        legacy_handler,
+    )
+
+    result = router.route("¿Qué puedo preguntarte?")
+
+    assert isinstance(result, HybridChatResult)
+    assert result.handled_by == "business_knowledge"
+    assert result.success is True
+    query_executor.execute.assert_not_called()
+    response_engine.generate.assert_not_called()
+    legacy_handler.assert_not_called()
+
+
 @pytest.mark.parametrize(
     ("query_type", "answer_snippet"),
     [
-        (BusinessQueryType.SYSTEM_CAPABILITIES, "puedo consultar"),
         (BusinessQueryType.DATA_COVERAGE, "abarcan desde"),
         (BusinessQueryType.DATASET_INFO, "Actualmente analizo"),
     ],

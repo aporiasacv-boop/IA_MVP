@@ -3,7 +3,6 @@ from collections.abc import Callable
 from app.conversation_memory.schemas import ConversationContext
 from app.query_engine.query_catalog import (
     DEFAULT_TOP_QUESTIONS,
-    DISCOVERY_QUESTIONS,
     QUERY_TYPE_EXAMPLE_QUESTIONS,
     RELATED_QUERY_TYPES,
 )
@@ -19,7 +18,7 @@ from app.suggested_questions.validator import validate_questions
 TopQuestionsProvider = Callable[[int], list[str]]
 
 MIN_SUGGESTIONS = 3
-MAX_SUGGESTIONS = 5
+MAX_SUGGESTIONS = 4
 
 
 class SuggestedQuestionsEngine:
@@ -57,33 +56,31 @@ class SuggestedQuestionsEngine:
             candidates.extend(TYPE_SPECIFIC_RULES[query_type])
             source_parts.append("type_rules")
 
-        for question in self._top_questions_provider(MAX_SUGGESTIONS):
-            candidates.append(question)
-        if not source_parts or source_parts[-1] != "top_queries":
+        context_query_type = (
+            conversation_context.last_query_type if conversation_context else None
+        )
+        resolved_for_related = query_type
+        if resolved_for_related is None and context_query_type:
+            try:
+                resolved_for_related = BusinessQueryType(context_query_type)
+            except ValueError:
+                resolved_for_related = None
+
+        if resolved_for_related is not None:
+            for related in RELATED_QUERY_TYPES.get(resolved_for_related, ()):
+                example = QUERY_TYPE_EXAMPLE_QUESTIONS.get(related)
+                if example:
+                    candidates.append(example)
+            source_parts.append("related_types")
+
+        if len(candidates) < MAX_SUGGESTIONS:
+            for question in self._top_questions_provider(MAX_SUGGESTIONS):
+                candidates.append(question)
             source_parts.append("top_queries")
 
-        for related in RELATED_QUERY_TYPES.get(query_type, ()):
-            example = QUERY_TYPE_EXAMPLE_QUESTIONS.get(related)
-            if example:
-                candidates.append(example)
-        source_parts.append("related_types")
-
-        for example in QUERY_TYPE_EXAMPLE_QUESTIONS.values():
-            candidates.append(example)
-        source_parts.append("capabilities")
-
-        for question in DISCOVERY_QUESTIONS:
-            candidates.append(question)
-        source_parts.append("discovery")
-
-        if conversation_context and conversation_context.last_query_type:
-            _ = conversation_context.last_query_type
-
-        _ = current_operation
-        _ = current_entity
-
         questions = validate_questions(candidates)[:MAX_SUGGESTIONS]
-        while len(questions) < MIN_SUGGESTIONS:
+
+        if len(questions) < MIN_SUGGESTIONS:
             for fallback in DEFAULT_TOP_QUESTIONS:
                 extra = validate_questions([fallback])
                 for item in extra:
@@ -91,7 +88,6 @@ class SuggestedQuestionsEngine:
                         questions.append(item)
                 if len(questions) >= MIN_SUGGESTIONS:
                     break
-            break
 
         questions = questions[:MAX_SUGGESTIONS]
         resolved_confidence = confidence if confidence is not None else 0.85
@@ -113,9 +109,7 @@ class SuggestedQuestionsEngine:
         current_query_type: str | None,
         handled_by: str | None,
     ) -> BusinessQueryType | None:
-        if handled_by == "capability_discovery":
-            return None
-        if handled_by == "guided_fallback":
+        if handled_by in {"capability_discovery", "guided_fallback", "product_identity", "business_knowledge"}:
             return None
         if not current_query_type:
             return None

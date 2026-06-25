@@ -241,7 +241,7 @@ def test_route_conversational_question_uses_legacy_chat(
     legacy_handler.assert_called_once_with("Explícame qué observas en estos datos.")
 
 
-def test_route_capability_discovery_que_puedes_hacer(
+def test_route_system_capabilities_redirects_to_business_knowledge(
     router: HybridChatRouter,
     query_planner: MagicMock,
     query_executor: MagicMock,
@@ -250,14 +250,11 @@ def test_route_capability_discovery_que_puedes_hacer(
 ) -> None:
     _configure_business_query(query_planner, BusinessQueryType.SYSTEM_CAPABILITIES)
 
-    result = router.route("¿Qué puedes hacer?")
+    result = router.route("¿Qué puedo preguntarte?")
 
-    assert result.handled_by == "capability_discovery"
+    assert result.handled_by == "business_knowledge"
     assert result.success is True
-    assert result.answer.startswith("Puedo ayudarte con información sobre:")
-    assert result.metadata["capabilities_count"] == 5
-    assert result.metadata["example_questions_count"] == 3
-    assert result.suggestions is None
+    assert "Clientes" in result.answer or "clientes" in result.answer.lower()
     query_executor.execute.assert_not_called()
     response_engine.generate.assert_not_called()
     legacy_handler.assert_not_called()

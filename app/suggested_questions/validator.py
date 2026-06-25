@@ -11,6 +11,23 @@ KNOWN_QUESTIONS: set[str] = {
     for question in QUERY_TYPE_EXAMPLE_QUESTIONS.values()
 }
 
+BLOCKED_SUGGESTION_PATTERNS: tuple[str, ...] = (
+    "grafica",
+    "gráfica",
+    "prediccion",
+    "predicción",
+    "pronostic",
+    "machine learning",
+    "comparar meses",
+    "optimizas costos",
+    "insights detectaste",
+)
+
+
+def _is_blocked_suggestion(question: str) -> bool:
+    lowered = question.strip().lower()
+    return any(pattern in lowered for pattern in BLOCKED_SUGGESTION_PATTERNS)
+
 
 def is_planner_supported(question: str) -> bool:
     intent = _intent_builder.build(question)
@@ -34,6 +51,8 @@ def validate_questions(questions: list[str]) -> list[str]:
         if not key or key in seen:
             continue
         if not is_planner_supported(question):
+            continue
+        if _is_blocked_suggestion(question):
             continue
         validated.append(question)
         seen.add(key)

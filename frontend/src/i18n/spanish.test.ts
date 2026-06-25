@@ -123,6 +123,7 @@ describe('spanish localization catalog', () => {
   })
 
   it('covers all handled_by keys', () => {
-    expect(Object.keys(HANDLED_BY_LABELS)).toHaveLength(6)
+    expect(Object.keys(HANDLED_BY_LABELS)).toHaveLength(9)
+    expect(translateHandledBy('business_knowledge')).toBe('Conocimiento Institucional')
   })
 })

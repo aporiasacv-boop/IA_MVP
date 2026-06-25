@@ -11,10 +11,13 @@ const navItems = [
   { to: '/perfiles', label: es.nav.profiles, end: false },
   { to: '/ontologia', label: es.nav.ontology, end: false },
   { to: '/conocimiento', label: es.nav.knowledge, end: false },
+  { to: '/objetos-conocimiento', label: es.nav.knowledgeObjects, end: false },
   { to: '/razonamiento', label: es.nav.reasoning, end: false },
   { to: '/intencion-semantica', label: es.nav.semanticIntent, end: false },
   { to: '/evidencia', label: es.nav.evidence, end: false },
-  { to: '/costos-ia', label: es.nav.aiCosts, end: false },
+  { to: '/simulador', label: es.nav.simulator, end: false },
+  { to: '/centro-decisiones', label: es.nav.decisionCenter, end: false },
+  { to: '/finops', label: es.nav.finops, end: false },
 ]
 
 export function Sidebar() {

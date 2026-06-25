@@ -3,32 +3,29 @@ export interface SuggestionGroup {
   items: string[]
 }
 
+/** Grupos de sugerencias rápidas para el asistente. */
 export const SUGGESTION_GROUPS: SuggestionGroup[] = [
   {
     label: 'Consultas empresariales',
     items: [
       '¿Qué pasó en junio?',
       '¿Quién es nuestro mejor cliente?',
-      'Resume 2025',
-      '¿Qué insights detectaste?',
-      '¿Cómo optimizas costos?',
+      '¿Cuántos clientes existen?',
+      '¿Qué proveedor tuvo más movimiento en junio?',
+      '¿Cuál es el periodo de los datos?',
     ],
   },
   {
     label: 'Capacidades y alcance',
     items: [
       '¿Qué puedes hacer?',
-      '¿Qué no puedes hacer?',
-      '¿Puedes hacer gráficas?',
-      '¿Puedes comparar meses?',
-      '¿Puedes hacer predicciones?',
+      '¿Cómo obtienes la información?',
       '¿Qué limitaciones tienes?',
+      '¿Qué es un cliente?',
+      '¿Qué es una cuenta contable?',
     ],
   },
 ]
-
-/** @deprecated Usar SUGGESTION_GROUPS */
-export const QUICK_SUGGESTIONS = SUGGESTION_GROUPS.flatMap((group) => group.items)
 
 export const LOADING_MESSAGES = [
   'Analizando información...',

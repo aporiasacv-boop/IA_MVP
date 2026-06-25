@@ -1,72 +1,74 @@
 import { useCallback, useEffect, useState } from 'react'
-import * as enterpriseKnowledgeApi from '../services/enterpriseKnowledgeApi'
-import type {
-  EnterpriseKnowledgeObject,
-  KnowledgeListResponse,
-  KnowledgeStatistics,
-} from '../types/enterpriseKnowledge'
+import {
+  getEnterpriseKnowledgeCategories,
+  getEnterpriseKnowledgeHealth,
+  getEnterpriseKnowledgeProviders,
+  getEnterpriseKnowledgeStatistics,
+  searchEnterpriseKnowledge,
+  type EnterpriseKnowledgeDocument,
+  type EnterpriseKnowledgeHealth,
+  type EnterpriseKnowledgeProvidersResponse,
+  type EnterpriseKnowledgeStatistics,
+} from '../services/enterpriseKnowledgeApi'
 
 export function useEnterpriseKnowledge() {
-  const [list, setList] = useState<KnowledgeListResponse | null>(null)
-  const [statistics, setStatistics] = useState<KnowledgeStatistics | null>(null)
-  const [selected, setSelected] = useState<EnterpriseKnowledgeObject | null>(null)
+  const [statistics, setStatistics] = useState<EnterpriseKnowledgeStatistics | null>(null)
+  const [health, setHealth] = useState<EnterpriseKnowledgeHealth | null>(null)
+  const [providers, setProviders] = useState<EnterpriseKnowledgeProvidersResponse | null>(null)
+  const [categories, setCategories] = useState<Awaited<
+    ReturnType<typeof getEnterpriseKnowledgeCategories>
+  > | null>(null)
   const [search, setSearch] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [results, setResults] = useState<EnterpriseKnowledgeDocument[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const loadDetail = useCallback(async (canonicalId: number) => {
-    const detail = await enterpriseKnowledgeApi.getKnowledgeEntity(canonicalId)
-    setSelected(detail)
-  }, [])
 
   const refresh = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const [listResponse, statsResponse] = await Promise.all([
-        enterpriseKnowledgeApi.listKnowledgeEntities({ search: search || undefined, page_size: 30 }),
-        enterpriseKnowledgeApi.getKnowledgeStatistics(),
+      const [stats, healthData, providerData, categoryData] = await Promise.all([
+        getEnterpriseKnowledgeStatistics(),
+        getEnterpriseKnowledgeHealth(),
+        getEnterpriseKnowledgeProviders(),
+        getEnterpriseKnowledgeCategories(),
       ])
-      setList(listResponse)
-      setStatistics(statsResponse)
-      if (listResponse.items.length > 0) {
-        await loadDetail(listResponse.items[0].canonical_id)
-      } else {
-        setSelected(null)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido')
+      setStatistics(stats)
+      setHealth(healthData)
+      setProviders(providerData)
+      setCategories(categoryData)
+    } catch {
+      setError('No fue posible cargar el Servicio de Conocimiento.')
     } finally {
       setIsLoading(false)
     }
-  }, [search, loadDetail])
-
-  const selectEntity = useCallback(
-    async (canonicalId: number) => {
-      setIsLoading(true)
-      setError(null)
-      try {
-        await loadDetail(canonicalId)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido')
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [loadDetail],
-  )
+  }, [])
 
   useEffect(() => {
     void refresh()
   }, [refresh])
 
+  useEffect(() => {
+    if (!search.trim()) {
+      setResults([])
+      return
+    }
+    const timer = window.setTimeout(() => {
+      void searchEnterpriseKnowledge(search.trim())
+        .then((response) => setResults(response.items))
+        .catch(() => setResults([]))
+    }, 300)
+    return () => window.clearTimeout(timer)
+  }, [search])
+
   return {
-    list,
     statistics,
-    selected,
-    selectEntity,
+    health,
+    providers,
+    categories,
     search,
     setSearch,
+    results,
     isLoading,
     error,
     refresh,

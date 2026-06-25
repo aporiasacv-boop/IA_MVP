@@ -4,6 +4,8 @@ from fastapi import FastAPI
 
 from app.api.routes import (
     analytics,
+    business_knowledge,
+    enterprise_knowledge_service,
     business_analytics,
     business_ontology,
     business_entities,
@@ -14,6 +16,10 @@ from app.api.routes import (
     semantic_intent,
     evidence,
     executive_response,
+    finops,
+    simulation,
+    decision,
+    knowledge_pack,
     chat,
     health,
     hybrid_chat,
@@ -66,3 +72,9 @@ app.include_router(semantic_intent.router)
 app.include_router(evidence.router)
 app.include_router(executive_response.router)
 app.include_router(executive_response.cost_router)
+app.include_router(finops.router)
+app.include_router(simulation.router)
+app.include_router(decision.router)
+app.include_router(knowledge_pack.router)
+app.include_router(business_knowledge.router)
+app.include_router(enterprise_knowledge_service.router)

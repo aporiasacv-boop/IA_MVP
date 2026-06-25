@@ -11,7 +11,8 @@ const BADGE_STYLES: Record<string, string> = {
   guided_fallback: 'text-amber-700/90',
   capability_discovery: 'text-violet-700/90',
   conversation_memory: 'text-teal-700/90',
-  slot_clarification: 'text-orange-700/90',
+  product_identity: 'text-indigo-700/90',
+  executive_reasoning: 'text-rose-700/90',
 }
 
 export function ResponseOriginBadge({ message }: ResponseOriginBadgeProps) {

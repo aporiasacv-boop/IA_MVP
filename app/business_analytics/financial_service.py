@@ -27,6 +27,34 @@ class FinancialAnalyticsService:
         deterministic = sum(counts[route] for route in DETERMINISTIC_ROUTES)
         ai_requests = counts[AI_ROUTE]
 
+        from app.operational_metrics.service import get_operational_metrics_service
+
+        finops = get_operational_metrics_service().overview()
+        if finops.total_queries > 0:
+            llm_cost = finops.total_cost_usd
+            ollama_cost = round(
+                sum(
+                    item.cost_usd
+                    for item in get_operational_metrics_service().providers().providers
+                    if item.provider == "ollama"
+                ),
+                4,
+            )
+            return FinancialAnalyticsResponse(
+                total_requests=total,
+                deterministic_requests=deterministic,
+                ai_requests=ai_requests,
+                ai_avoidance_rate=_safe_rate(deterministic, total),
+                legacy_dependency_rate=_safe_rate(ai_requests, total),
+                estimated_monthly_requests=self._repository.get_monthly_request_count(),
+                estimated_gpt_equivalent_calls=ai_requests,
+                estimated_claude_equivalent_calls=ai_requests,
+                estimated_ollama_calls=ai_requests,
+                estimated_gpt_cost=round(llm_cost, 4),
+                estimated_claude_cost=round(llm_cost, 4),
+                estimated_ollama_cost=ollama_cost,
+            )
+
         return FinancialAnalyticsResponse(
             total_requests=total,
             deterministic_requests=deterministic,

@@ -3,6 +3,9 @@ import time
 import unicodedata
 from dataclasses import dataclass
 
+from app.enterprise_knowledge_service.runtime.matcher import get_institutional_matcher
+from app.enterprise_knowledge_service.service import get_enterprise_knowledge_platform_service
+from app.product_identity.profile import get_product_identity
 from app.services.intent_router import Intent
 
 
@@ -21,29 +24,20 @@ class SocialMatch:
 class SocialIdentityLayer:
     CONFIDENCE = 1.0
 
-    GREETING_ANSWER = (
-        "Hola.\n\n"
-        "Soy el Asistente de Inteligencia Empresarial de Olnatura.\n\n"
-        "Puedo ayudarte a consultar clientes, proveedores, indicadores, "
-        "tendencias e insights empresariales."
-    )
+    @property
+    def GREETING_ANSWER(self) -> str:
+        intro = get_enterprise_knowledge_platform_service().get_faq("¿Cómo te llamas?") or get_product_identity().name
+        return f"Hola.\n\n{intro}"
 
-    IDENTITY_ANSWER = (
-        "Soy el Asistente de Inteligencia Empresarial de Olnatura.\n\n"
-        "Mi función es consultar, analizar y presentar información empresarial "
-        "utilizando los datos disponibles en la plataforma."
-    )
+    @property
+    def IDENTITY_ANSWER(self) -> str:
+        resolved = get_institutional_matcher().resolve_institutional_question("¿Quién eres?")
+        return resolved.answer if resolved else get_product_identity().name
 
-    CAPABILITIES_ANSWER = (
-        "Puedo ayudarte a:\n\n"
-        "• Consultar clientes\n"
-        "• Consultar proveedores\n"
-        "• Consultar cuentas contables\n"
-        "• Consultar KPIs\n"
-        "• Consultar tendencias\n"
-        "• Generar insights empresariales\n"
-        "• Resumir información del ejercicio analizado"
-    )
+    @property
+    def CAPABILITIES_ANSWER(self) -> str:
+        resolved = get_institutional_matcher().resolve_institutional_question("¿Qué puedes hacer?")
+        return resolved.answer if resolved else ""
 
     STATUS_ANSWER = (
         "Operativo y listo para responder consultas empresariales.\n\n"
@@ -51,18 +45,10 @@ class SocialIdentityLayer:
         "disponible en la plataforma."
     )
 
-    KNOWLEDGE_SCOPE_ANSWER = (
-        "Actualmente dispongo de información relacionada con:\n\n"
-        "• Clientes\n"
-        "• Proveedores\n"
-        "• Cuentas contables\n"
-        "• Movimientos financieros\n"
-        "• Indicadores empresariales\n"
-        "• Tendencias\n"
-        "• Insights ejecutivos\n\n"
-        "No dispongo actualmente de información sobre productos, inventarios, "
-        "producción o logística."
-    )
+    @property
+    def KNOWLEDGE_SCOPE_ANSWER(self) -> str:
+        resolved = get_institutional_matcher().resolve_institutional_question("¿Qué información analizas?")
+        return resolved.answer if resolved else ""
 
     KPI_CATALOG_ANSWER = (
         "Actualmente puedo consultar:\n\n"
@@ -234,9 +220,10 @@ class SocialIdentityLayer:
         if self._is_out_of_scope(normalized):
             return self._build(Intent.OUT_OF_SCOPE, self.OUT_OF_SCOPE_ANSWER)
 
-        checks: list[tuple[Intent, tuple[str, ...], str]] = [
-            (Intent.GREETING, self.GREETING_PATTERNS, self.GREETING_ANSWER),
+        checks: list[tuple[Intent, tuple[str, ...], str | None]] = [
+            (Intent.GREETING, self.GREETING_PATTERNS, None),
             (Intent.STATUS, self.STATUS_PATTERNS, self.STATUS_ANSWER),
+            (Intent.KNOWLEDGE_SCOPE, self.KNOWLEDGE_SCOPE_PATTERNS, None),
             (Intent.KPI_CATALOG, self.KPI_CATALOG_PATTERNS, self.KPI_CATALOG_ANSWER),
             (Intent.INSIGHT_CATALOG, self.INSIGHT_CATALOG_PATTERNS, self.INSIGHT_CATALOG_ANSWER),
         ]
@@ -244,15 +231,25 @@ class SocialIdentityLayer:
         for intent, patterns, answer in checks:
             if intent == Intent.GREETING:
                 if self._matches_greeting(normalized):
-                    return self._build(intent, answer)
+                    return self._build(intent, self.GREETING_ANSWER)
                 continue
-            if self._matches_any(normalized, patterns):
+            if intent == Intent.KNOWLEDGE_SCOPE and self._matches_any(normalized, patterns):
+                scope_answer = self.KNOWLEDGE_SCOPE_ANSWER
+                if scope_answer:
+                    return self._build(intent, scope_answer)
+                continue
+            if answer and self._matches_any(normalized, patterns):
                 return self._build(intent, answer)
         return None
 
     def _match_identity(self, normalized: str) -> SocialMatch | None:
         if self._matches_any(normalized, self.IDENTITY_PATTERNS):
-            return self._build(Intent.IDENTITY, self.IDENTITY_ANSWER, match_type="identity")
+            answer = build_identity_answer(normalized) or self.IDENTITY_ANSWER
+            return self._build(Intent.IDENTITY, answer, match_type="identity")
+        if self._matches_any(normalized, self.CAPABILITIES_PATTERNS):
+            answer = build_identity_answer(normalized) or self.CAPABILITIES_ANSWER
+            if answer:
+                return self._build(Intent.IDENTITY, answer, match_type="identity")
         return None
 
     def _is_out_of_scope(self, normalized: str) -> bool:

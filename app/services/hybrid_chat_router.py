@@ -17,6 +17,7 @@ from app.schemas.hybrid_chat import HybridChatResult
 from app.schemas.semantic_intent import BusinessSemanticIntent
 from app.services.semantic_intent_builder import SemanticIntentBuilder
 from app.capability_discovery.detector import is_capability_discovery
+from app.enterprise_knowledge_service.integration.consumers import knowledge_for_capability_discovery
 from app.capability_discovery.engine import CapabilityDiscoveryEngine
 from app.capability_discovery.schemas import CapabilityDiscoveryResult
 from app.guided_fallback.engine import GuidedFallbackEngine
@@ -179,17 +180,25 @@ class HybridChatRouter:
                 elapsed_ms(planner_started),
             )
 
-        if is_capability_discovery(message):
-            discovery_started = time.perf_counter()
-            discovery = self._capability_discovery_engine.discover()
-            if collector and self._performance_tracker is not None:
-                self._performance_tracker.record_stage(
-                    collector,
-                    "capability_discovery",
-                    elapsed_ms(discovery_started),
-                )
+        if query.query_type == BusinessQueryType.SYSTEM_CAPABILITIES:
+            payload = knowledge_for_capability_discovery()
+            answer, capabilities, examples = payload.answer, payload.capabilities, payload.examples
+            result = HybridChatResult(
+                handled_by="business_knowledge",
+                success=True,
+                answer=answer,
+                metadata={
+                    "handled_by": "business_knowledge",
+                    "query_type": "SYSTEM_CAPABILITIES",
+                    "confidence": 1.0,
+                    "knowledge_source": "knowledge_pack/executive/capacidades-asistente.md",
+                    "knowledge_match_type": "system_capabilities_redirect",
+                    "capabilities_count": len(capabilities),
+                    "example_questions_count": len(examples),
+                },
+            )
             self._conversation_memory_service.save_context(session_id, context)
-            return self._handle_capability_discovery(discovery, session_id=session_id)
+            return self._attach_suggestions(result, context=context)
 
         if query.query_type != BusinessQueryType.UNSUPPORTED:
             clarification_started = time.perf_counter()

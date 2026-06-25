@@ -12,7 +12,7 @@ def test_suggested_questions_health_validation_passes() -> None:
 
     assert report["samples_validated"] >= 5
     assert report["min_questions"] >= 3
-    assert report["max_questions"] <= 5
+    assert report["max_questions"] <= 4
 
 
 def test_health_validation_rejects_duplicate_questions() -> None:

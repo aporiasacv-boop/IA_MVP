@@ -13,24 +13,6 @@ export interface MetricsSummary {
   avg_ollama_time_ms: number | null
 }
 
-export interface HandledByDistributionItem {
-  handled_by: string
-  count: number
-  success_rate: number
-}
-
-export interface RoutingPathItem {
-  handled_by: string
-  query_type: string
-  count: number
-}
-
-export interface RoutingMetrics {
-  handled_by_distribution: HandledByDistributionItem[]
-  success_rate_by_handled_by: Record<string, number>
-  top_paths: RoutingPathItem[]
-}
-
 export interface TopQueryItem {
   question: string
   count: number

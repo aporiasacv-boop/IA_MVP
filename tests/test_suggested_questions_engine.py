@@ -20,7 +20,7 @@ def engine() -> SuggestedQuestionsEngine:
 def test_generate_count_clientes_uses_type_rules(engine: SuggestedQuestionsEngine) -> None:
     result = engine.generate(current_query_type=BusinessQueryType.COUNT_CLIENTES.value)
 
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
     assert result.source in {"type_rules", "mixed"}
     for rule_question in TYPE_SPECIFIC_RULES[BusinessQueryType.COUNT_CLIENTES]:
         if rule_question in validate_questions([rule_question]):
@@ -30,7 +30,7 @@ def test_generate_count_clientes_uses_type_rules(engine: SuggestedQuestionsEngin
 def test_generate_top_clientes_suggests_related_queries(engine: SuggestedQuestionsEngine) -> None:
     result = engine.generate(current_query_type=BusinessQueryType.TOP_CLIENTES.value)
 
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
     assert any(
         "proveedor" in question.lower() or "cliente" in question.lower()
         for question in result.questions
@@ -40,7 +40,7 @@ def test_generate_top_clientes_suggests_related_queries(engine: SuggestedQuestio
 def test_generate_max_proveedor_mes_suggests_follow_ups(engine: SuggestedQuestionsEngine) -> None:
     result = engine.generate(current_query_type=BusinessQueryType.MAX_PROVEEDOR_MES.value)
 
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
     assert len(result.questions) == len(set(q.lower() for q in result.questions))
 
 
@@ -50,7 +50,7 @@ def test_generate_capability_discovery_context(engine: SuggestedQuestionsEngine)
         handled_by="capability_discovery",
     )
 
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
     assert result.metadata["handled_by"] == "capability_discovery"
 
 
@@ -60,15 +60,32 @@ def test_generate_guided_fallback_context(engine: SuggestedQuestionsEngine) -> N
         handled_by="guided_fallback",
     )
 
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
     assert result.metadata["handled_by"] == "guided_fallback"
 
 
-def test_generate_never_exceeds_five_questions(engine: SuggestedQuestionsEngine) -> None:
+def test_generate_never_exceeds_four_questions(engine: SuggestedQuestionsEngine) -> None:
     result = engine.generate(
         current_query_type=BusinessQueryType.COUNT_CLIENTES.value,
     )
-    assert len(result.questions) <= 5
+    assert len(result.questions) <= 4
+
+
+def test_validate_questions_filters_blocked_suggestions() -> None:
+    validated = validate_questions([
+        "¿Cuántos clientes existen?",
+        "¿Puedes hacer predicciones?",
+        "¿Puedes comparar meses?",
+    ])
+    assert "¿Cuántos clientes existen?" in validated
+    assert "¿Puedes hacer predicciones?" not in validated
+    assert "¿Puedes comparar meses?" not in validated
+
+
+def test_generate_product_identity_skips_type_rules(engine: SuggestedQuestionsEngine) -> None:
+    result = engine.generate(handled_by="product_identity")
+    assert 3 <= len(result.questions) <= 4
+    assert result.metadata["handled_by"] == "product_identity"
 
 
 def test_validate_questions_filters_unsupported() -> None:
@@ -91,7 +108,7 @@ def test_generate_uses_confidence_when_provided(engine: SuggestedQuestionsEngine
 
 def test_generate_without_query_type_uses_defaults(engine: SuggestedQuestionsEngine) -> None:
     result = engine.generate(current_query_type=None)
-    assert 3 <= len(result.questions) <= 5
+    assert 3 <= len(result.questions) <= 4
 
 
 def test_generate_questions_are_planner_supported(engine: SuggestedQuestionsEngine) -> None:

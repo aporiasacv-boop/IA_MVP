@@ -6,13 +6,12 @@ from app.capability_discovery.health import (
     CapabilityDiscoveryHealthError,
     validate_capability_discovery_health,
 )
+from app.business_knowledge.loader import get_capabilities_payload
 from app.capability_discovery.v2.constants import (
     FORBIDDEN_EXAMPLE_PATTERNS,
     MAX_CAPABILITIES,
     MAX_EXAMPLES,
     MAX_RESPONSE_LINES,
-    V2_CAPABILITIES,
-    V2_EXAMPLES,
 )
 from app.capability_discovery.v2.formatter import build_v2_answer
 from app.capability_discovery.v2.metrics import CapabilityDiscoveryV2Metrics
@@ -52,12 +51,13 @@ def test_is_capability_discovery_dataset_questions_go_to_business_pipeline() -> 
 
 def test_discover_v2_limits_capabilities_and_examples(engine: CapabilityDiscoveryEngine) -> None:
     result = engine.discover()
+    _, expected_caps, expected_examples = get_capabilities_payload()
 
     assert result.success is True
     assert len(result.capabilities) == MAX_CAPABILITIES
     assert len(result.example_questions) == MAX_EXAMPLES
-    assert result.capabilities == list(V2_CAPABILITIES)
-    assert result.example_questions == list(V2_EXAMPLES)
+    assert result.capabilities == expected_caps
+    assert result.example_questions == expected_examples
 
 
 def test_discover_v2_answer_is_conversational(engine: CapabilityDiscoveryEngine) -> None:
@@ -69,7 +69,6 @@ def test_discover_v2_answer_is_conversational(engine: CapabilityDiscoveryEngine)
     assert "Cobertura de datos" not in result.answer
     assert "Consultas empresariales soportadas" not in result.answer
     assert "Rankings" not in result.answer
-    assert "Cuentas" not in result.answer
 
 
 def test_discover_v2_has_no_suggestions(engine: CapabilityDiscoveryEngine) -> None:
@@ -92,28 +91,31 @@ def test_discover_v2_records_metrics(engine: CapabilityDiscoveryEngine) -> None:
 
 
 def test_build_v2_answer_matches_template() -> None:
-    answer = build_v2_answer(V2_CAPABILITIES, V2_EXAMPLES)
+    _, caps, examples = get_capabilities_payload()
+    answer = build_v2_answer(tuple(caps), tuple(examples))
     assert "• Clientes" in answer
     assert "• ¿Cuántos clientes existen?" in answer
-    assert len(answer.splitlines()) == 12
+    assert len(answer.splitlines()) <= MAX_RESPONSE_LINES
 
 
 def test_validate_v2_rejects_too_many_capabilities() -> None:
+    _, _, examples = get_capabilities_payload()
     with pytest.raises(CapabilityDiscoveryV2ValidationError, match="Máximo 5 capacidades"):
         validate_v2_discovery_result(
             answer="x",
             capabilities=["a"] * 6,
-            example_questions=list(V2_EXAMPLES),
+            example_questions=examples,
             suggestions_present=False,
         )
 
 
 def test_validate_v2_rejects_suggestions() -> None:
+    _, caps, examples = get_capabilities_payload()
     with pytest.raises(CapabilityDiscoveryV2ValidationError, match="suggested_questions"):
         validate_v2_discovery_result(
-            answer=build_v2_answer(V2_CAPABILITIES, V2_EXAMPLES),
-            capabilities=list(V2_CAPABILITIES),
-            example_questions=list(V2_EXAMPLES),
+            answer=build_v2_answer(tuple(caps), tuple(examples)),
+            capabilities=caps,
+            example_questions=examples,
             suggestions_present=True,
         )
 

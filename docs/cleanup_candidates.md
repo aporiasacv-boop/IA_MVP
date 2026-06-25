@@ -1,11 +1,26 @@
 # Cleanup Candidates — Asistente de Inteligencia Empresarial Olnatura
 
 **Fecha:** 2026-06-23  
-**IMPORTANTE:** Esta lista es **solo recomendación**. Ningún elemento ha sido eliminado ni modificado.
+**Actualización RC1:** Elementos marcados como ✅ fueron eliminados en la consolidación RC1.
 
 ---
 
-## Tabla de candidatos
+## Ejecutado en RC1 ✅
+
+| Elemento | Acción |
+|----------|--------|
+| `AICostsPage.tsx`, `useAICosts`, `aiCostsApi` | Eliminados |
+| `useBusinessKnowledge`, `businessKnowledgeApi` | Eliminados |
+| `PerformanceHero`, `PerformanceMetricsGrid`, `CostOptimizationSection` | Eliminados |
+| `AICostPanels` | Eliminado |
+| `QUICK_SUGGESTIONS` | Eliminado |
+| `RoutingMetrics` (tipos TS) | Eliminado |
+
+**Total eliminado:** 11 artefactos frontend sin consumidores.
+
+---
+
+## Tabla de candidatos pendientes
 
 | Elemento | Tipo | Razón | Impacto | Riesgo |
 |----------|------|-------|---------|--------|
@@ -22,9 +37,9 @@
 | `app/services/insights_engine.py` | Servicio | Sin UI | Bajo | Bajo |
 | `GET /api/metrics/routing` | Endpoint | Sin frontend; datos en summary parcial | Bajo | Bajo |
 | `GET /api/audit/report` | Endpoint | Sin UI; dominio fallback | Bajo | Bajo |
-| `frontend/.../PerformanceMetricsGrid.tsx` | Componente React | 0 imports; sustituido | Bajo | **Bajo** |
-| `frontend/.../CostOptimizationSection.tsx` | Componente React | 0 imports | Bajo | **Bajo** |
-| `frontend/.../PerformanceHero.tsx` | Componente React | 0 imports | Bajo | **Bajo** |
+| `frontend/.../PerformanceMetricsGrid.tsx` | Componente React | 0 imports; sustituido | Bajo | ✅ RC1 |
+| `frontend/.../CostOptimizationSection.tsx` | Componente React | 0 imports | Bajo | ✅ RC1 |
+| `frontend/.../PerformanceHero.tsx` | Componente React | 0 imports | Bajo | ✅ RC1 |
 | `frontend/types/metrics.ts` → `RoutingMetrics` | Tipo TS | Sin servicio ni UI | Bajo | **Bajo** |
 | `frontend/constants/suggestions.ts` → `QUICK_SUGGESTIONS` | Constante | Deprecada | Bajo | **Bajo** |
 | `pandas` + `openpyxl` en `requirements.txt` | Dependencia | Solo scripts ETL | Bajo | **Bajo** |

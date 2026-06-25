@@ -1,4 +1,5 @@
 import { DEBUG_MODE } from '../../config/featureFlags'
+import { es } from '../../i18n/spanish'
 import { chatSessionManager } from '../../services/chatSessionManager'
 
 interface ChatSessionDebugPanelProps {
@@ -23,15 +24,15 @@ export function ChatSessionDebugPanel({
       <p className="font-semibold uppercase tracking-[0.14em]">Depuración — sesión conversacional</p>
       <dl className="mt-2 grid gap-1 sm:grid-cols-2">
         <div>
-          <dt className="text-amber-800/80">Session ID</dt>
+          <dt className="text-amber-800/80">{es.chat.sessionId}</dt>
           <dd className="font-mono text-[10px] break-all">{sessionId ?? '—'}</dd>
         </div>
         <div>
-          <dt className="text-amber-800/80">Pending clarification</dt>
+          <dt className="text-amber-800/80">{es.chat.pendingClarification}</dt>
           <dd>{isClarificationPending ? 'Sí' : 'No'}</dd>
         </div>
         <div>
-          <dt className="text-amber-800/80">Clarification resolved (última)</dt>
+          <dt className="text-amber-800/80">{es.chat.clarificationResolved} (última)</dt>
           <dd>
             {lastClarificationResolved === undefined
               ? '—'
@@ -41,15 +42,15 @@ export function ChatSessionDebugPanel({
           </dd>
         </div>
         <div>
-          <dt className="text-amber-800/80">Clarification completion rate</dt>
+          <dt className="text-amber-800/80">Tasa de aclaraciones completadas</dt>
           <dd>{(clarificationCompletionRate * 100).toFixed(0)}%</dd>
         </div>
         <div>
-          <dt className="text-amber-800/80">Sessions started</dt>
+          <dt className="text-amber-800/80">Sesiones iniciadas</dt>
           <dd>{metrics.conversation_sessions_started}</dd>
         </div>
         <div>
-          <dt className="text-amber-800/80">Sessions reused</dt>
+          <dt className="text-amber-800/80">Sesiones reutilizadas</dt>
           <dd>{metrics.conversation_sessions_reused}</dd>
         </div>
       </dl>

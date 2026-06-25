@@ -1,35 +1,30 @@
-# IA_MVP Frontend
+# IA_MVP Frontend — Olnatura Intelligence
 
 Interfaz ejecutiva de Inteligencia Empresarial para Olnatura.
 
 ## Stack
 
-- React 19
-- TypeScript
-- Vite
-- TailwindCSS 4
-- React Router
+- React 19 · TypeScript · Vite · TailwindCSS 4 · React Router
 
 ## Ejecución local
 
-**1. Backend** (puerto 8001):
+**Backend** (puerto 8001):
 
 ```powershell
 cd ..
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --port 8001
 ```
 
-**2. Frontend**:
+**Frontend**:
 
 ```powershell
-cd frontend
 npm install
 npm run dev
 ```
 
 Abrir: http://localhost:5173
 
-En desarrollo, Vite hace **proxy** de `/api` hacia el backend (`.env.development` usa URL vacía). En producción usar `VITE_API_BASE_URL` en `.env`.
+En desarrollo, Vite hace **proxy** de `/api` hacia el backend.
 
 ## Variables de entorno
 
@@ -37,30 +32,43 @@ En desarrollo, Vite hace **proxy** de `/api` hacia el backend (`.env.development
 VITE_API_BASE_URL=http://localhost:8001
 ```
 
-Copiar desde `.env.example`.
+## Pantallas activas (16)
 
-## Prueba de integración API
+| Ruta | Pantalla |
+|------|----------|
+| `/` | Asistente IA |
+| `/rendimiento` | Rendimiento |
+| `/analytics` | Analítica Empresarial |
+| `/audit` | Auditoría Operacional |
+| `/entidades` | Entidades Empresariales |
+| `/canonicas` | Identidad Canónica |
+| `/perfiles` | Perfiles de Comportamiento |
+| `/ontologia` | Ontología Empresarial |
+| `/conocimiento` | Servicio de Conocimiento |
+| `/objetos-conocimiento` | Objetos EKO |
+| `/razonamiento` | Razonamiento Empresarial |
+| `/intencion-semantica` | Intención Semántica |
+| `/evidencia` | Paquete de Evidencia |
+| `/simulador` | Simulador |
+| `/centro-decisiones` | Centro de Decisiones |
+| `/finops` | FinOps |
 
-Con el backend en ejecución:
+Alias de compatibilidad: `/costos-ia` → FinOps.
+
+## Localización
+
+Toda etiqueta visible proviene de `src/i18n/spanish.ts`.
+
+## Tests
 
 ```powershell
-npm run test:api
+npm run test:api   # integración con backend
+npm run test       # vitest unitarios
 ```
 
-## Build de producción
+## Build
 
 ```powershell
 npm run build
 npm run preview
 ```
-
-## Vistas
-
-1. **Asistente IA** — conversación empresarial con respuestas protagonistas
-2. **Rendimiento** — métricas de optimización determinística vs generativa
-
-## Notas
-
-- Datos mock integrados (sin conexión al backend por ahora)
-- Diseño inspirado en ChatGPT Enterprise, Claude y Microsoft Copilot
-- Identidad visual Olnatura con verde corporativo

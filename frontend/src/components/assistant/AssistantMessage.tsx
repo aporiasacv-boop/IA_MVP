@@ -1,5 +1,6 @@
 import { DEBUG_MODE } from '../../config/featureFlags'
 import type { ChatMessage } from '../../types/chat'
+import { ExecutiveResponseSummary } from './ExecutiveResponseSummary'
 import { ExecutiveText } from './ExecutiveText'
 import { HybridTechnicalDetails } from './HybridTechnicalDetails'
 import { ResponseOriginBadge } from './ResponseOriginBadge'
@@ -44,6 +45,7 @@ export function AssistantMessage({
 
   return (
     <article className="animate-fade-in-up py-5 md:py-6">
+      <ExecutiveResponseSummary message={message} />
       {DEBUG_MODE && <ResponseOriginBadge message={message} />}
       {isClarificationPending && message.hybrid?.handledBy === 'slot_clarification' && (
         <p className="mb-2 text-[11px] font-medium text-amber-800/90">Modo aclaración activo</p>

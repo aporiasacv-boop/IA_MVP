@@ -153,7 +153,7 @@ def test_integration_hybrid_conversation_memory_follow_up_month(
     assert data["metadata"]["query_type"] == "MAX_PROVEEDOR_MES"
 
 
-def test_integration_hybrid_capability_discovery_que_puedes_hacer(
+def test_integration_hybrid_product_identity_que_puedes_hacer(
     integration_client: TestClient,
 ) -> None:
     response = integration_client.post(
@@ -162,17 +162,12 @@ def test_integration_hybrid_capability_discovery_que_puedes_hacer(
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "capability_discovery"
+    assert data["handled_by"] == "product_identity"
     assert data["handled_by"] != "guided_fallback"
     assert data["handled_by"] != "legacy_chat"
     assert data["success"] is True
-    assert data["answer"].startswith("Puedo ayudarte con información sobre:")
-    assert data["metadata"]["capabilities_count"] == 5
-    assert data["metadata"]["example_questions_count"] == 3
-    assert data["metadata"]["discovery_version"] == "v2"
-    assert data["metadata"]["discovery_success"] is True
-    assert data["metadata"]["suggested_questions_count"] == 0
-    assert len(data["metadata"]["example_questions"]) == 3
+    assert "Olnatura Intelligence" in data["answer"]
+    assert "response_time_ms" in data["metadata"]
 
 
 def test_integration_hybrid_guided_fallback_ambiguous_negocio(
@@ -225,11 +220,9 @@ def test_integration_hybrid_legacy_chat_generic_question(
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "legacy_chat"
+    assert data["handled_by"] == "business_knowledge"
     assert data["success"] is True
-    assert data["answer"]
-    assert data["metadata"]["handled_by"] == "legacy_chat"
-    assert "intent" in data["metadata"]
+    assert "contraparte" in data["answer"].lower()
 
 
 def test_integration_hybrid_legacy_chat_conversational_question(

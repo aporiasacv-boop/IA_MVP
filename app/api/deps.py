@@ -38,6 +38,15 @@ from app.evidence_package.service import EvidencePackageService
 from app.ai_orchestration.executive_response_engine import ExecutiveResponseEngine
 from app.ai_orchestration.providers.factory import create_llm_provider_with_fallback
 from app.ai_orchestration.service import AIOrchestrationService
+from app.knowledge_pack.service import BusinessKnowledgePackService
+from app.business_knowledge.runtime import BusinessKnowledgeRuntime
+from app.enterprise_knowledge_service.service import (
+    EnterpriseKnowledgePlatformService,
+    get_enterprise_knowledge_platform_service,
+)
+from app.operational_metrics.service import OperationalMetricsService, get_operational_metrics_service
+from app.simulation_engine.service import SimulationEngineService, get_simulation_engine_service
+from app.enterprise_decision.service import EnterpriseDecisionService, get_enterprise_decision_service
 from app.business_ontology.repository import BusinessOntologyRepository
 from app.business_ontology.service import BusinessOntologyService
 from app.business_entity_profile.repository import BusinessEntityProfileRepository
@@ -159,6 +168,9 @@ def get_executive_reasoning_handler(
     def handler(message: str) -> HybridChatResult:
         response = orchestration_service.generate(ExecutiveGenerateRequest(question=message))
         answer = orchestration_service.format_executive_answer(response)
+        evidence_sources = [
+            f"{citation.source}:{citation.key}" for citation in response.citations[:5]
+        ]
         return HybridChatResult(
             handled_by="executive_reasoning",
             success=not response.hallucination_guard_triggered or bool(answer),
@@ -173,6 +185,9 @@ def get_executive_reasoning_handler(
                 "estimated_cost": response.estimated_cost,
                 "hallucination_guard_triggered": response.hallucination_guard_triggered,
                 "evidence_package_id": response.evidence_package_id,
+                "limitations": response.limitations,
+                "evidence_sources": evidence_sources,
+                "response_time_ms": round(response.response_time * 1000, 2),
             },
         )
 
@@ -296,3 +311,29 @@ def get_enterprise_reasoning_service(
 
 def get_semantic_intent_service() -> SemanticIntentService:
     return SemanticIntentService()
+
+
+def get_enterprise_knowledge_platform_service_dep() -> EnterpriseKnowledgePlatformService:
+    return get_enterprise_knowledge_platform_service()
+
+
+def get_operational_metrics_service_dep(
+    session: Session = Depends(get_db),
+) -> OperationalMetricsService:
+    return get_operational_metrics_service(session)
+
+
+def get_simulation_engine_service_dep() -> SimulationEngineService:
+    return get_simulation_engine_service()
+
+
+def get_enterprise_decision_service_dep() -> EnterpriseDecisionService:
+    return get_enterprise_decision_service()
+
+
+def get_business_knowledge_pack_service() -> BusinessKnowledgePackService:
+    return BusinessKnowledgePackService()
+
+
+def get_business_knowledge_runtime() -> BusinessKnowledgeRuntime:
+    return BusinessKnowledgeRuntime()

@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import text
 
 from app.database.database import SessionLocal
-from app.capability_discovery.v2.constants import MAX_RESPONSE_LINES
 from app.main import app
 
 
@@ -26,9 +25,7 @@ def discovery_client() -> TestClient:
 @pytest.mark.parametrize(
     "question",
     [
-        "¿Qué puedes hacer?",
         "¿Cómo puedes ayudarme?",
-        "¿Qué puedo preguntarte?",
     ],
 )
 def test_integration_capability_discovery_v2(
@@ -39,13 +36,28 @@ def test_integration_capability_discovery_v2(
     assert response.status_code == 200
     data = response.json()
 
-    assert data["handled_by"] == "capability_discovery"
+    assert data["handled_by"] == "business_knowledge"
     assert data["success"] is True
-    assert data["answer"].startswith("Puedo ayudarte con información sobre:")
-    assert len(data["answer"].splitlines()) <= MAX_RESPONSE_LINES
-    assert data["metadata"]["capabilities_count"] == 5
-    assert data["metadata"]["example_questions_count"] == 3
-    assert data["metadata"]["discovery_version"] == "v2"
-    assert data["metadata"]["suggested_questions_count"] == 0
-    assert data["metadata"]["suggested_questions_generated"] is False
-    assert data.get("suggestions") is None or data["suggestions"]["questions"] == []
+    assert "Clientes" in data["answer"] or "clientes" in data["answer"].lower()
+
+
+def test_integration_business_knowledge_capability_question(
+    discovery_client: TestClient,
+) -> None:
+    response = discovery_client.post("/api/chat/hybrid", json={"message": "¿Qué puedo preguntarte?"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["handled_by"] == "business_knowledge"
+    assert data["metadata"]["knowledge_match_type"] == "capabilities"
+
+
+def test_integration_product_identity_capabilities(
+    discovery_client: TestClient,
+) -> None:
+    response = discovery_client.post("/api/chat/hybrid", json={"message": "¿Qué puedes hacer?"})
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["handled_by"] == "product_identity"
+    assert data["success"] is True
+    assert "Olnatura Intelligence" in data["answer"]

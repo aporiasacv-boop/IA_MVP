@@ -8,6 +8,7 @@ from app.coverage_recovery.patterns import (
     DATASET_INFO_QUERIES,
     REGRESSION_BUSINESS_QUERIES,
 )
+from app.product_identity.matcher import is_identity_question
 from app.database.database import SessionLocal
 from app.main import app
 
@@ -56,7 +57,10 @@ def test_integration_capability_discovery_queries(
     response = recovery_client.post("/api/chat/hybrid", json={"message": question})
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "capability_discovery"
+    if is_identity_question(question):
+        assert data["handled_by"] == "product_identity"
+    else:
+        assert data["handled_by"] == "business_knowledge"
     assert data["handled_by"] != "guided_fallback"
 
 

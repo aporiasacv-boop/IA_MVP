@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     OLLAMA_COST_PER_1K_TOKENS: float = 0.0
     ESTIMATED_TOKENS_PER_LEGACY_CALL: float = 0.0
     ESTIMATED_TOKENS_PER_EXECUTIVE_CALL: float = 2500.0
+    USD_TO_MXN_RATE: float = 17.5
+    FINOPS_BASELINE_INPUT_TOKENS: float = 800.0
+    FINOPS_BASELINE_OUTPUT_TOKENS: float = 400.0
+    FINOPS_QUERIES_PER_USER_DAY: float = 12.0
 
     @property
     def database_url(self) -> str:

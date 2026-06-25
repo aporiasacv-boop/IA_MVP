@@ -16,6 +16,11 @@ from app.business_entity_profile.repository import BusinessEntityProfileReposito
 from app.canonical_business_entity.metrics import CanonicalEntityMetrics
 from app.canonical_business_entity.repository import CanonicalBusinessEntityRepository
 from app.capability_discovery.v2.metrics import CapabilityDiscoveryV2Metrics
+from app.operational_metrics.metrics import get_operational_finops_metrics
+from app.simulation_engine.metrics import get_simulation_engine_metrics
+from app.enterprise_decision.metrics import get_enterprise_decision_metrics
+from app.enterprise_knowledge_service.metrics import get_enterprise_knowledge_metrics
+from app.enterprise_knowledge_service.repository.repository import KnowledgeRepository
 from app.coverage_recovery.metrics import CoverageRecoveryMetricsService
 from app.guided_fallback.v2.metrics import GuidedFallbackV2Metrics
 from app.observability.metrics_repository import PerformanceMetricsRepository
@@ -135,6 +140,25 @@ class MetricsService:
                 "executive_reasoning_requests": llm_snap["llm_requests"],
             }
         )
+        eks_metrics = get_enterprise_knowledge_metrics()
+        eks_repository = KnowledgeRepository()
+        eks_metrics.set_provider_distribution(eks_repository.provider_distribution())
+        eks_snapshot = eks_metrics.snapshot()
+        summary.update(
+            {
+                **{k: v for k, v in eks_snapshot.items() if k != "provider_distribution"},
+                "knowledge_runtime_documents": len(eks_repository.all_documents()),
+                "knowledge_requests": eks_metrics.knowledge_requests,
+                "knowledge_provider_distribution": eks_metrics.provider_distribution,
+                "cache_hit_rate": eks_metrics.cache_hit_rate,
+                "cache_size": eks_metrics.cache_size,
+                "average_search_time": eks_metrics.average_search_time_ms,
+                "knowledge_sources": eks_snapshot.get("knowledge_sources", []),
+            }
+        )
+        summary.update(get_operational_finops_metrics().snapshot())
+        summary.update(get_simulation_engine_metrics().snapshot())
+        summary.update(get_enterprise_decision_metrics().snapshot())
         return MetricsSummaryResponse(**summary)
 
     def get_top_queries(self, limit: int = 10) -> list[TopQueryItem]:

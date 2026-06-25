@@ -95,6 +95,34 @@ class MetricsSummaryResponse(BaseModel):
     hallucination_guard_triggered: int = 0
     llm_fallbacks: int = 0
     executive_reasoning_requests: int = 0
+    knowledge_runtime_hits: int = 0
+    knowledge_runtime_misses: int = 0
+    knowledge_runtime_cache_hits: int = 0
+    knowledge_runtime_reload_time: float = 0.0
+    knowledge_runtime_last_refresh: datetime | None = None
+    knowledge_runtime_documents: int = 0
+    knowledge_requests: int = 0
+    knowledge_provider_distribution: dict[str, int] = Field(default_factory=dict)
+    cache_hit_rate: float = 0.0
+    cache_size: int = 0
+    average_search_time: float = 0.0
+    knowledge_sources: list[str] = Field(default_factory=list)
+    operational_records_total: int = 0
+    operational_cost_usd_total: float = 0.0
+    operational_avoided_cost_usd_total: float = 0.0
+    operational_llm_queries: int = 0
+    operational_real_token_records: int = 0
+    operational_provider_requests: dict[str, int] = Field(default_factory=dict)
+    simulation_runs: int = 0
+    most_used_scenario: str = ""
+    provider_selected: str = ""
+    average_projected_cost: float = 0.0
+    average_projected_savings: float = 0.0
+    decision_requests: int = 0
+    recommendation_types: dict[str, int] = Field(default_factory=dict)
+    average_confidence: float = 0.0
+    average_financial_impact: float = 0.0
+    decision_sources: list[str] = Field(default_factory=list)
 
 
 class HandledByDistributionItem(BaseModel):

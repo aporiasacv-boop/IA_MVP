@@ -18,6 +18,8 @@ from app.enterprise_knowledge.metrics import EnterpriseKnowledgeMetrics
 from app.enterprise_knowledge.repository import EnterpriseKnowledgeRepository
 from app.evidence_package.metrics import EvidencePackageMetrics
 from app.ai_orchestration.metrics import LLMOrchestrationMetrics
+from app.enterprise_knowledge_service.metrics import get_enterprise_knowledge_metrics
+from app.enterprise_knowledge_service.repository.repository import KnowledgeRepository
 from app.semantic_intent.metrics import SemanticIntentMetrics
 from app.enterprise_reasoning.metrics import EnterpriseReasoningMetrics
 from app.enterprise_reasoning.repository import EnterpriseReasoningRepository
@@ -114,7 +116,9 @@ class BusinessAnalyticsService:
         semantic_metrics = SemanticIntentMetrics.snapshot()
         evidence_metrics = EvidencePackageMetrics.snapshot()
         llm_metrics = LLMOrchestrationMetrics.snapshot()
-
+        eks_metrics = get_enterprise_knowledge_metrics()
+        eks_repository = KnowledgeRepository()
+        eks_metrics.set_provider_distribution(eks_repository.provider_distribution())
         return CoverageReportResponse(
             coverage_score=min(max(coverage_score, 0.0), 100.0),
             success_rate=success_rate,
@@ -171,6 +175,18 @@ class BusinessAnalyticsService:
             average_cost_per_question=llm_metrics["average_cost_per_question"],
             hallucination_guard_triggered=llm_metrics["hallucination_guard_triggered"],
             llm_fallbacks=llm_metrics["llm_fallbacks"],
+            knowledge_runtime_hits=eks_metrics.hits,
+            knowledge_runtime_misses=eks_metrics.misses,
+            knowledge_runtime_cache_hits=eks_metrics.cache_hits,
+            knowledge_runtime_reload_time=eks_metrics.reload_time_ms,
+            knowledge_runtime_last_refresh=eks_metrics.last_refresh,
+            knowledge_runtime_documents=len(eks_repository.all_documents()),
+            knowledge_requests=eks_metrics.knowledge_requests,
+            knowledge_provider_distribution=eks_metrics.provider_distribution,
+            cache_hit_rate=eks_metrics.cache_hit_rate,
+            cache_size=eks_metrics.cache_size,
+            average_search_time=eks_metrics.average_search_time_ms,
+            knowledge_sources=list(eks_metrics.provider_distribution.keys()),
         )
 
     def _entity_metrics(self) -> dict:
