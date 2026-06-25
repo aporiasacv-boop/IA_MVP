@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Colores corporativos Olnatura (logo oficial) */
+  --color-olnatura-lime: #c5d930;
+  --color-olnatura-olive: #5a6330;
+  --color-olnatura-50: #f7f9f0;
+  --color-olnatura-100: #eef2dc;
+  --color-olnatura-200: #dde6b8;
+  --color-olnatura-500: #8fa032;
+  --color-olnatura-600: #5a6330;
+  --color-olnatura-700: #4a5228;
+
+  --color-surface: #f3f6ef;
+  --color-surface-subtle: #ebf0e4;
+  --color-surface-elevated: #f9fbf6;
+  --color-border: #e4e6df;
+  --color-border-subtle: #eceee8;
+  --color-muted: #6b6f63;
+  --color-muted-light: #94988c;
+  --color-foreground: #1c1e18;
+
+  --shadow-soft: 0 1px 2px rgb(28 30 24 / 0.04), 0 6px 20px rgb(28 30 24 / 0.05);
+  --shadow-input: 0 1px 2px rgb(28 30 24 / 0.03), 0 8px 28px rgb(90 99 48 / 0.07);
+  --shadow-input-focus: 0 0 0 1px rgb(90 99 48 / 0.14), 0 12px 36px rgb(90 99 48 / 0.1);
+
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-foreground);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s var(--ease-premium) both;
+}
+
+.transition-premium {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-premium);
+}
+
+.executive-highlight {
+  display: inline;
+  font-weight: 600;
+  color: var(--color-olnatura-700);
+  letter-spacing: -0.01em;
+}
+
+.executive-metric {
+  display: inline;
+  font-weight: 600;
+  color: var(--color-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.executive-block-highlight {
+  display: block;
+  margin: 0.35em 0;
+  font-size: 1.15em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-olnatura-700);
+}

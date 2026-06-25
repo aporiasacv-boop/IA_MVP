@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ia_mvp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ia_mvp
+      POSTGRES_PASSWORD: ia_mvp
+      POSTGRES_DB: ia_mvp
+    ports:
+      - "5433:5432"
+    volumes:
+      - ia_mvp_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ia_mvp -d ia_mvp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ia_mvp_pg_data:

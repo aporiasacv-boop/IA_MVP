@@ -1,0 +1,60 @@
+{
+  "pack_id": "behavioral_risk",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "rule_code": "risk_no_movements",
+      "conclusion_type": "risk",
+      "key": "inactive_entity",
+      "value_from": "eko_alert",
+      "value_ref": "no_movements",
+      "conditions": {"eko_alert_present": "no_movements"},
+      "severity": "critical",
+      "confidence": "1.0000",
+      "description": "Entidad sin movimientos registrados"
+    },
+    {
+      "rule_code": "risk_ambiguous_roles",
+      "conclusion_type": "risk",
+      "key": "role_ambiguity",
+      "value_from": "eko_alert",
+      "value_ref": "ambiguous_roles",
+      "conditions": {"eko_alert_present": "ambiguous_roles"},
+      "severity": "high",
+      "confidence": "0.8500",
+      "description": "Múltiples roles ontológicos en conflicto"
+    },
+    {
+      "rule_code": "risk_conflicting_natures",
+      "conclusion_type": "risk",
+      "key": "nature_conflict",
+      "value_from": "eko_alert",
+      "value_ref": "conflicting_natures",
+      "conditions": {"eko_alert_present": "conflicting_natures"},
+      "severity": "high",
+      "confidence": "0.8000",
+      "description": "Naturalezas contables contradictorias"
+    },
+    {
+      "rule_code": "alert_ambiguous_roles",
+      "conclusion_type": "alert",
+      "key": "review_role_classification",
+      "value": {"review_required": true, "dimension": "role"},
+      "conditions": {"eko_alert_present": "ambiguous_roles"},
+      "severity": "medium",
+      "confidence": "0.8200",
+      "description": "Revisar clasificación de rol"
+    },
+    {
+      "rule_code": "recommendation_resolve_roles",
+      "conclusion_type": "recommendation",
+      "key": "approve_primary_role",
+      "value": {"action": "approve_ontology_role", "priority": "medium"},
+      "conditions": {"eko_alert_present": "ambiguous_roles"},
+      "severity": "medium",
+      "confidence": "0.7800",
+      "incompatible_with": ["recommendation_diversify_counterparties"],
+      "description": "Aprobar rol ontológico principal"
+    }
+  ]
+}

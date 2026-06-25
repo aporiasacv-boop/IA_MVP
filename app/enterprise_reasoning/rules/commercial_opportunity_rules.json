@@ -1,0 +1,103 @@
+{
+  "pack_id": "commercial_opportunity",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "rule_code": "opportunity_high_volume",
+      "conclusion_type": "opportunity",
+      "key": "high_transaction_volume",
+      "value_from": "eko_signal",
+      "value_ref": "high_transaction_volume",
+      "conditions": {"eko_signal_present": "high_transaction_volume"},
+      "severity": "medium",
+      "confidence": "0.8500",
+      "description": "Volumen transaccional elevado"
+    },
+    {
+      "rule_code": "opportunity_seasonal_peak",
+      "conclusion_type": "opportunity",
+      "key": "seasonal_concentration",
+      "value_from": "eko_signal",
+      "value_ref": "seasonal_peak",
+      "conditions": {"eko_signal_present": "seasonal_peak"},
+      "severity": "low",
+      "confidence": "0.7500",
+      "description": "Concentración estacional detectada"
+    },
+    {
+      "rule_code": "finding_client_role",
+      "conclusion_type": "finding",
+      "key": "classified_as_client",
+      "value_from": "eko_role",
+      "value_ref": "CLIENTE",
+      "conditions": {"eko_roles_include": "CLIENTE"},
+      "severity": "low",
+      "confidence": "0.8800",
+      "description": "Entidad clasificada como cliente"
+    },
+    {
+      "rule_code": "finding_supplier_role",
+      "conclusion_type": "finding",
+      "key": "classified_as_supplier",
+      "value_from": "eko_role",
+      "value_ref": "PROVEEDOR",
+      "conditions": {"eko_roles_include": "PROVEEDOR"},
+      "severity": "low",
+      "confidence": "0.8800",
+      "description": "Entidad clasificada como proveedor"
+    },
+    {
+      "rule_code": "signal_debit_dominant",
+      "conclusion_type": "signal",
+      "key": "debit_dominant_behavior",
+      "value_from": "eko_signal",
+      "value_ref": "debit_dominant",
+      "conditions": {"eko_signal_present": "debit_dominant"},
+      "severity": "low",
+      "confidence": "0.8000",
+      "description": "Comportamiento con predominio de débitos"
+    },
+    {
+      "rule_code": "signal_credit_dominant",
+      "conclusion_type": "signal",
+      "key": "credit_dominant_behavior",
+      "value_from": "eko_signal",
+      "value_ref": "credit_dominant",
+      "conditions": {"eko_signal_present": "credit_dominant"},
+      "severity": "low",
+      "confidence": "0.8000",
+      "description": "Comportamiento con predominio de créditos"
+    },
+    {
+      "rule_code": "recommendation_deepen_relationship",
+      "conclusion_type": "recommendation",
+      "key": "prioritize_key_account",
+      "value": {"action": "prioritize_account", "priority": "medium"},
+      "conditions": {
+        "all_of": [
+          {"eko_signal_present": "high_transaction_volume"},
+          {"eko_roles_include": "CLIENTE"}
+        ]
+      },
+      "severity": "medium",
+      "confidence": "0.8300",
+      "description": "Priorizar cuenta clave por volumen"
+    },
+    {
+      "rule_code": "recommendation_diversify_counterparties",
+      "conclusion_type": "recommendation",
+      "key": "expand_counterparty_base",
+      "value": {"action": "diversify_counterparties", "priority": "low"},
+      "conditions": {
+        "all_of": [
+          {"eko_fact_max": {"field": "related_counterparties_count", "threshold": 2}},
+          {"eko_fact_min": {"field": "total_movements", "threshold": 50}}
+        ]
+      },
+      "severity": "low",
+      "confidence": "0.7000",
+      "incompatible_with": ["recommendation_resolve_roles"],
+      "description": "Ampliar base de contrapartes"
+    }
+  ]
+}

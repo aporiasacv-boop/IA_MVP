@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "verbs": [
+    {"verb_id": "mostrar", "category": "informative", "aliases": ["muestra", "muéstrame", "ver", "enseñar", "enseña"], "enabled": true},
+    {"verb_id": "listar", "category": "informative", "aliases": ["lista", "listado", "enumera"], "enabled": true},
+    {"verb_id": "obtener", "category": "informative", "aliases": ["obtén", "trae", "dame", "dime"], "enabled": true},
+    {"verb_id": "consultar", "category": "informative", "aliases": ["consulta", "buscar", "busca"], "enabled": true},
+    {"verb_id": "analizar", "category": "analytic", "aliases": ["analiza", "análisis", "analisis"], "enabled": true},
+    {"verb_id": "comparar", "category": "analytic", "aliases": ["compara", "comparación", "comparacion", "versus", "vs"], "enabled": true},
+    {"verb_id": "describir", "category": "analytic", "aliases": ["describe", "descripción", "descripcion"], "enabled": true},
+    {"verb_id": "explicar", "category": "analytic", "aliases": ["explica", "por qué", "porque", "porqué"], "enabled": true},
+    {"verb_id": "resumir", "category": "analytic", "aliases": ["resume", "resumen", "sintetiza"], "enabled": true},
+    {"verb_id": "identificar", "category": "analytic", "aliases": ["identifica", "detecta", "encuentra"], "enabled": true},
+    {"verb_id": "evaluar", "category": "executive", "aliases": ["evalúa", "evalua", "valorar", "valora"], "enabled": true},
+    {"verb_id": "diagnosticar", "category": "executive", "aliases": ["diagnostica", "diagnóstico", "diagnostico"], "enabled": true},
+    {"verb_id": "justificar", "category": "executive", "aliases": ["justifica", "fundamenta"], "enabled": true},
+    {"verb_id": "recomendar", "category": "executive", "aliases": ["recomienda", "sugiere", "sugerir", "aconseja"], "enabled": true},
+    {"verb_id": "priorizar", "category": "executive", "aliases": ["prioriza", "ordena", "ranking"], "enabled": true},
+    {"verb_id": "interpretar", "category": "executive", "aliases": ["interpreta", "significa"], "enabled": true},
+    {"verb_id": "que_sabes", "category": "conversational", "aliases": ["qué sabes", "que sabes", "qué conoces", "que conoces"], "enabled": true},
+    {"verb_id": "quien_es", "category": "conversational", "aliases": ["quién es", "quien es", "quiénes son", "quienes son"], "enabled": true},
+    {"verb_id": "como_funciona", "category": "conversational", "aliases": ["cómo funciona", "como funciona", "cómo opera", "como opera"], "enabled": true},
+    {"verb_id": "por_que", "category": "conversational", "aliases": ["por qué", "porque", "porqué"], "enabled": true},
+    {"verb_id": "proyectar", "category": "future", "aliases": ["proyecta", "proyección", "proyeccion"], "enabled": false},
+    {"verb_id": "simular", "category": "future", "aliases": ["simula", "simulación", "simulacion"], "enabled": false},
+    {"verb_id": "estimar", "category": "future", "aliases": ["estima", "estimación", "estimacion"], "enabled": false},
+    {"verb_id": "pronosticar", "category": "future", "aliases": ["pronostica", "pronóstico", "pronostico", "forecast"], "enabled": false}
+  ]
+}

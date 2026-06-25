@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "objects": [
+    {"object_id": "cliente", "aliases": ["clientes", "cuenta cliente", "comprador"], "eko_sections": ["identity", "facts", "relationships"], "ero_sections": ["findings"]},
+    {"object_id": "proveedor", "aliases": ["proveedores", "cuenta proveedor", "vendedor"], "eko_sections": ["identity", "facts", "relationships"], "ero_sections": ["findings"]},
+    {"object_id": "entidad", "aliases": ["entidades", "entidad empresarial", "empresa", "contraparte"], "eko_sections": ["identity", "roles", "quality"], "ero_sections": ["findings", "risks"]},
+    {"object_id": "cuenta", "aliases": ["cuentas", "cuenta contable", "subcuenta"], "eko_sections": ["relationships", "facts"], "ero_sections": []},
+    {"object_id": "movimiento", "aliases": ["movimientos", "transacción", "transacciones", "operación", "operaciones"], "eko_sections": ["facts", "patterns", "signals"], "ero_sections": ["signals"]},
+    {"object_id": "perfil", "aliases": ["perfiles", "comportamiento", "perfil de entidad"], "eko_sections": ["facts", "patterns", "behaviors"], "ero_sections": ["findings"]},
+    {"object_id": "ontologia", "aliases": ["ontología", "clasificación", "rol", "roles", "naturaleza"], "eko_sections": ["roles", "nature", "behaviors"], "ero_sections": ["findings"]},
+    {"object_id": "conocimiento", "aliases": ["eko", "knowledge", "conocimiento empresarial"], "eko_sections": ["identity", "facts", "quality", "evidence"], "ero_sections": []},
+    {"object_id": "riesgo", "aliases": ["riesgos", "alerta", "alertas", "anomalía"], "eko_sections": ["alerts", "signals"], "ero_sections": ["risks", "alerts"]},
+    {"object_id": "oportunidad", "aliases": ["oportunidades", "potencial"], "eko_sections": ["signals", "patterns"], "ero_sections": ["opportunities"]},
+    {"object_id": "recomendacion", "aliases": ["recomendación", "recomendaciones", "acción", "acciones"], "eko_sections": [], "ero_sections": ["recommendations"]}
+  ],
+  "contexts": [
+    {"context_id": "ventas", "aliases": ["venta", "ingresos", "facturación", "facturacion"]},
+    {"context_id": "compras", "aliases": ["compra", "gastos", "adquisición", "adquisicion"]},
+    {"context_id": "finanzas", "aliases": ["financiero", "financiera", "tesorería", "tesoreria"]},
+    {"context_id": "inventario", "aliases": ["stock", "almacén", "almacen"]},
+    {"context_id": "logistica", "aliases": ["logística", "distribución", "distribucion"]}
+  ]
+}

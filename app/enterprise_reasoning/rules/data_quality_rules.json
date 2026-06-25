@@ -1,0 +1,56 @@
+{
+  "pack_id": "data_quality",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "rule_code": "risk_missing_profile",
+      "conclusion_type": "risk",
+      "key": "data_gap_profile",
+      "value": {"gap_type": "profile", "status": "missing"},
+      "conditions": {"eko_alert_present": "missing_profile"},
+      "severity": "high",
+      "confidence": "0.9500",
+      "description": "Entidad sin perfil comportamental"
+    },
+    {
+      "rule_code": "risk_missing_ontology",
+      "conclusion_type": "risk",
+      "key": "data_gap_ontology",
+      "value": {"gap_type": "ontology", "status": "missing"},
+      "conditions": {"eko_alert_present": "missing_ontology"},
+      "severity": "high",
+      "confidence": "0.9500",
+      "description": "Entidad sin clasificación ontológica"
+    },
+    {
+      "rule_code": "alert_incomplete_knowledge",
+      "conclusion_type": "alert",
+      "key": "low_knowledge_completeness",
+      "value_from": "match_evidence",
+      "conditions": {"not": {"eko_quality_min_completeness": 0.5}},
+      "severity": "medium",
+      "confidence": "0.9000",
+      "description": "Completitud del EKO por debajo del umbral"
+    },
+    {
+      "rule_code": "recommendation_build_profile",
+      "conclusion_type": "recommendation",
+      "key": "execute_profile_build",
+      "value": {"action": "build_profile", "priority": "high"},
+      "conditions": {"eko_alert_present": "missing_profile"},
+      "severity": "high",
+      "confidence": "0.9200",
+      "description": "Ejecutar perfilado de entidad"
+    },
+    {
+      "rule_code": "recommendation_run_ontology",
+      "conclusion_type": "recommendation",
+      "key": "execute_ontology_classification",
+      "value": {"action": "run_ontology", "priority": "high"},
+      "conditions": {"eko_alert_present": "missing_ontology"},
+      "severity": "high",
+      "confidence": "0.9200",
+      "description": "Ejecutar motor ontológico"
+    }
+  ]
+}
