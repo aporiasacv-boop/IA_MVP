@@ -8,6 +8,7 @@ EXECUTIVE_VERBS = frozenset({
     "recomendar",
     "priorizar",
     "interpretar",
+    "resumir",
 })
 
 PROVIDER_OPENAI = "openai"

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { es } from '../../i18n/spanish'
 
 interface ChatInputProps {
   onSend: (question: string) => void
@@ -45,7 +46,7 @@ export function ChatInput({ onSend, submitDisabled = false }: ChatInputProps) {
           onChange={(event) => setValue(event.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="¿Qué quieres saber sobre tu negocio?"
+          placeholder={es.executive.ai.inputPlaceholder}
           className="min-w-0 flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-light"
         />
         <button
@@ -53,7 +54,7 @@ export function ChatInput({ onSend, submitDisabled = false }: ChatInputProps) {
           disabled={submitDisabled || !value.trim()}
           className="transition-premium shrink-0 rounded-xl bg-olnatura-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-olnatura-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Enviar
+          {es.executive.ai.send}
         </button>
       </div>
     </form>

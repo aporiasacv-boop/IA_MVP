@@ -10,6 +10,7 @@ QUERY_TYPE_EXAMPLE_QUESTIONS: dict[BusinessQueryType, str] = {
     BusinessQueryType.LOOKUP_CLIENTE_BY_CUENTA: "¿A qué cliente pertenece la cuenta C001?",
     BusinessQueryType.DATA_COVERAGE: "¿Cuál es el periodo de los datos?",
     BusinessQueryType.DATASET_INFO: "¿Cuántos registros tienes?",
+    BusinessQueryType.KPIS: "KPIs",
     BusinessQueryType.SYSTEM_CAPABILITIES: "¿Qué puedo preguntarte?",
 }
 

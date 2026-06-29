@@ -15,7 +15,7 @@ const DECISION_LABELS: Record<DecisionType, string> = {
   estrategia_despliegue: 'Estrategia de despliegue',
   optimizacion_costos: 'Optimización de costos',
   optimizacion_ia: 'Optimización del uso de IA',
-  optimizacion_pipeline: 'Optimización del Pipeline',
+  optimizacion_pipeline: 'Optimización del canal empresarial',
 }
 
 export function useDecisionCenter() {

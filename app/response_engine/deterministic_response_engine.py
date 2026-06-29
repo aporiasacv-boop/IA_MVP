@@ -8,6 +8,7 @@ from app.response_engine.response_templates import (
     COUNT_PROVEEDORES_TEMPLATE,
     DATASET_INFO_HEADER,
     DATA_COVERAGE_TEMPLATE,
+    KPIS_TEMPLATE,
     MAX_PROVEEDOR_MES_TEMPLATE,
     SYSTEM_CAPABILITIES_HEADER,
     TOP_CLIENTES_HEADER,
@@ -80,6 +81,19 @@ class DeterministicResponseEngine:
             return self._success(
                 query_type,
                 self._format_dataset_info(data),
+                query_result,
+            )
+
+        if query_type == BusinessQueryType.KPIS:
+            return self._success(
+                query_type,
+                KPIS_TEMPLATE.format(
+                    movimientos=int(data.get("movimientos", 0)),
+                    clientes=int(data.get("clientes", 0)),
+                    proveedores=int(data.get("proveedores", 0)),
+                    cuentas=int(data.get("cuentas", 0)),
+                    divisas=int(data.get("divisas", 0)),
+                ),
                 query_result,
             )
 

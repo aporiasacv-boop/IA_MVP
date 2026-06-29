@@ -8,6 +8,20 @@ from app.main import app
 
 pytestmark = pytest.mark.integration
 
+_GOVERNED_INSTITUTIONAL_HANDLERS = frozenset({"product_identity", "business_knowledge"})
+
+
+def _assert_capability_discovery_response(data: dict) -> None:
+    metadata = data["metadata"]
+    if metadata.get("reasoning_governed"):
+        assert metadata["pipeline_skipped"] is True
+        assert metadata["governance_route"] == "institutional_knowledge"
+        assert data["handled_by"] in _GOVERNED_INSTITUTIONAL_HANDLERS
+    else:
+        assert data["handled_by"] == "conversation_gateway"
+        assert metadata["gateway_decision"] == "conversation"
+    assert data["success"] is True
+
 
 @pytest.fixture(scope="module")
 def discovery_client() -> TestClient:
@@ -36,8 +50,7 @@ def test_integration_capability_discovery_v2(
     assert response.status_code == 200
     data = response.json()
 
-    assert data["handled_by"] == "business_knowledge"
-    assert data["success"] is True
+    _assert_capability_discovery_response(data)
     assert "Clientes" in data["answer"] or "clientes" in data["answer"].lower()
 
 
@@ -47,8 +60,7 @@ def test_integration_business_knowledge_capability_question(
     response = discovery_client.post("/api/chat/hybrid", json={"message": "¿Qué puedo preguntarte?"})
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "business_knowledge"
-    assert data["metadata"]["knowledge_match_type"] == "capabilities"
+    _assert_capability_discovery_response(data)
 
 
 def test_integration_product_identity_capabilities(
@@ -58,6 +70,5 @@ def test_integration_product_identity_capabilities(
     assert response.status_code == 200
     data = response.json()
 
-    assert data["handled_by"] == "product_identity"
-    assert data["success"] is True
+    _assert_capability_discovery_response(data)
     assert "Olnatura Intelligence" in data["answer"]

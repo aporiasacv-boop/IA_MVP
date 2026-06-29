@@ -21,13 +21,28 @@ from app.evidence_package.schemas import EnterpriseEvidencePackage
 from app.evidence_package.service import EvidencePackageService
 from app.evidence_package.schemas import EvidenceBuildRequest
 from app.semantic_intent.semantic_parser import parse_semantic_question
+from app.utils.text_normalizer import normalize_for_matching
+
+_EXECUTIVE_PHRASE_PATTERNS: tuple[str, ...] = (
+    "como ves el negocio",
+    "panorama ejecutivo",
+    "panorama del negocio",
+    "dame un panorama",
+    "que riesgos",
+    "que oportunidades",
+    "riesgos observas",
+    "oportunidades detectas",
+    "comportamiento del negocio",
+    "analiza el comportamiento del negocio",
+)
 
 
 def is_executive_reasoning_candidate(question: str) -> bool:
     parse = parse_semantic_question(question)
-    if parse.business_verb is None:
-        return False
-    return parse.business_verb.verb_id in EXECUTIVE_VERBS
+    if parse.business_verb is not None and parse.business_verb.verb_id in EXECUTIVE_VERBS:
+        return True
+    normalized = normalize_for_matching(question)
+    return any(pattern in normalized for pattern in _EXECUTIVE_PHRASE_PATTERNS)
 
 
 class AIOrchestrationService:

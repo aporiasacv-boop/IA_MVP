@@ -17,6 +17,12 @@ def reset_metrics() -> None:
 
 def test_is_executive_candidate() -> None:
     assert is_executive_reasoning_candidate("Evaluar riesgos del cliente principal") is True
+    assert is_executive_reasoning_candidate("Resumen junio") is True
+    assert is_executive_reasoning_candidate("Resume mayo") is True
+    assert is_executive_reasoning_candidate("¿Cómo ves el negocio?") is True
+    assert is_executive_reasoning_candidate("Dame un panorama ejecutivo") is True
+    assert is_executive_reasoning_candidate("¿Qué riesgos observas?") is True
+    assert is_executive_reasoning_candidate("Analiza el comportamiento del negocio") is True
     assert is_executive_reasoning_candidate("Listar clientes") is False
 
 

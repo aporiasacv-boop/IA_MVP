@@ -19,6 +19,7 @@ QUERY_TYPE_DESCRIPTIONS: dict[BusinessQueryType, str] = {
     BusinessQueryType.LOOKUP_CLIENTE_BY_CUENTA: "Relación cliente–cuenta",
     BusinessQueryType.DATA_COVERAGE: "Periodo y cobertura temporal de los datos",
     BusinessQueryType.DATASET_INFO: "Volumen del dataset (movimientos, clientes, proveedores)",
+    BusinessQueryType.KPIS: "Indicadores clave del dataset",
 }
 
 

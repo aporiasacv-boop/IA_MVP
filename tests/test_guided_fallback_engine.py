@@ -277,7 +277,7 @@ def test_build_suggested_questions_exhausts_available_catalog() -> None:
         min_count=20,
         max_count=20,
     )
-    assert len(suggestions) == 10
+    assert len(suggestions) == 11
 
 
 def test_build_suggested_questions_uses_top_queries_first() -> None:

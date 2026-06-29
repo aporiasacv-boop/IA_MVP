@@ -13,7 +13,7 @@ from app.database.database import SessionLocal
 
 
 def main() -> int:
-    csv_path = PROJECT_ROOT / "docs" / "entity_catalog_candidate.csv"
+    csv_path = PROJECT_ROOT / "data" / "entity_catalog_candidate.csv"
     print("Cargando catálogo maestro de entidades (idempotente)...")
     print(f"CSV opcional: {csv_path}")
 

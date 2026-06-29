@@ -25,6 +25,12 @@ DATA_COVERAGE_TEMPLATE = (
 
 DATASET_INFO_HEADER = "Actualmente analizo:"
 
+KPIS_TEMPLATE = (
+    "El dataset contiene {movimientos:,} movimientos, "
+    "{clientes:,} clientes, {proveedores:,} proveedores, "
+    "{cuentas:,} cuentas y {divisas:,} divisas operativas."
+)
+
 CAPABILITY_LABELS: dict[str, str] = {
     "clientes": "Clientes",
     "proveedores": "Proveedores",

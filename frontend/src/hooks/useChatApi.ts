@@ -1,5 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { LOADING_MESSAGES } from '../constants/suggestions'
+import { enterpriseExperienceStore } from '../enterpriseExperience/store'
+import type { SerializedChatMessage } from '../enterpriseExperience/types'
 import {
   isHybridChatResult,
   mapApiResponseToMessage,
@@ -10,9 +12,13 @@ import { chatSessionManager } from '../services/chatSessionManager'
 import { recordChatResponse, recordHybridResponse } from '../services/performanceStore'
 import { ChatApiError } from '../types/chat'
 import type { ChatMessage, RecentQuery } from '../types/chat'
+import type { HybridChatResult } from '../types/hybrid-chat'
+
+interface UseChatApiOptions {
+  onHybridResponse?: (response: HybridChatResult) => void
+}
 
 let messageCounter = 0
-let queryCounter = 0
 
 function nextId(prefix: string): string {
   messageCounter += 1
@@ -24,9 +30,41 @@ function pickLoadingMessage(): string {
   return LOADING_MESSAGES[index] ?? LOADING_MESSAGES[0]
 }
 
-export function useChatApi() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [recentQueries, setRecentQueries] = useState<RecentQuery[]>([])
+function serializeMessage(message: ChatMessage): SerializedChatMessage {
+  return {
+    id: message.id,
+    role: message.role,
+    content: message.content,
+    isError: message.isError,
+    timestamp: message.timestamp.toISOString(),
+  }
+}
+
+function deserializeMessage(message: SerializedChatMessage): ChatMessage {
+  return {
+    id: message.id,
+    role: message.role,
+    content: message.content,
+    isError: message.isError,
+    timestamp: new Date(message.timestamp),
+  }
+}
+
+function restoreMessages(): ChatMessage[] {
+  return enterpriseExperienceStore.getSnapshot().conversation.map(deserializeMessage)
+}
+
+function restoreRecentQueries(): RecentQuery[] {
+  return enterpriseExperienceStore.getSnapshot().recentQueries.map((item) => ({
+    id: item.id,
+    question: item.question,
+    askedAt: new Date(item.askedAt),
+  }))
+}
+
+export function useChatApi(options: UseChatApiOptions = {}) {
+  const [messages, setMessages] = useState<ChatMessage[]>(() => restoreMessages())
+  const [recentQueries, setRecentQueries] = useState<RecentQuery[]>(() => restoreRecentQueries())
   const [isLoading, setIsLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState(LOADING_MESSAGES[0])
   const [error, setError] = useState<string | null>(null)
@@ -34,12 +72,17 @@ export function useChatApi() {
     () => chatSessionManager.isPendingClarification(),
   )
 
+  useEffect(() => {
+    enterpriseExperienceStore.setConversation(messages.map(serializeMessage))
+  }, [messages])
+
   const refreshClarificationState = useCallback(() => {
     setIsClarificationPending(chatSessionManager.isPendingClarification())
   }, [])
 
   const startNewConversation = useCallback(() => {
     chatSessionManager.startNewConversation()
+    enterpriseExperienceStore.resetConversation()
     setMessages([])
     setRecentQueries([])
     setError(null)
@@ -62,6 +105,7 @@ export function useChatApi() {
 
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
+    enterpriseExperienceStore.addRecentQuery(trimmed)
 
     try {
       const response = await sendChatQuestion(trimmed)
@@ -69,6 +113,7 @@ export function useChatApi() {
         const assistantMessage = mapHybridChatResultToMessage(response, nextId('a'))
         setMessages((prev) => [...prev, assistantMessage])
         recordHybridResponse(trimmed, response)
+        options.onHybridResponse?.(response)
       } else {
         const assistantMessage = mapApiResponseToMessage(response, nextId('a'))
         setMessages((prev) => [...prev, assistantMessage])
@@ -77,16 +122,14 @@ export function useChatApi() {
 
       refreshClarificationState()
 
-      queryCounter += 1
-      const entry: RecentQuery = {
-        id: `rq-${queryCounter}`,
-        question: trimmed,
-        askedAt: new Date(),
-      }
-      setRecentQueries((prev) => [
-        entry,
-        ...prev.filter((q) => q.question !== trimmed),
-      ].slice(0, 8))
+      const stored = enterpriseExperienceStore.getSnapshot().recentQueries
+      setRecentQueries(
+        stored.map((item) => ({
+          id: item.id,
+          question: item.question,
+          askedAt: new Date(item.askedAt),
+        })),
+      )
     } catch (err) {
       const message =
         err instanceof ChatApiError
@@ -106,7 +149,7 @@ export function useChatApi() {
     } finally {
       setIsLoading(false)
     }
-  }, [isLoading, refreshClarificationState])
+  }, [isLoading, options.onHybridResponse, refreshClarificationState])
 
   return {
     messages,

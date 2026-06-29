@@ -16,6 +16,7 @@ from app.api.routes import (
     semantic_intent,
     evidence,
     executive_response,
+    executive_advisor,
     finops,
     simulation,
     decision,
@@ -72,6 +73,7 @@ app.include_router(semantic_intent.router)
 app.include_router(evidence.router)
 app.include_router(executive_response.router)
 app.include_router(executive_response.cost_router)
+app.include_router(executive_advisor.router)
 app.include_router(finops.router)
 app.include_router(simulation.router)
 app.include_router(decision.router)

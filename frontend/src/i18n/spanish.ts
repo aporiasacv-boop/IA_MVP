@@ -8,11 +8,26 @@ export const HANDLED_BY_LABELS: Record<string, string> = {
   conversation_memory: 'Memoria Conversacional',
   slot_clarification: 'Aclaración de Consulta',
   guided_fallback: 'Asistencia Guiada',
-  capability_discovery: 'Descubrimiento de Capacidades',
+  capability_discovery: 'Exploración de Capacidades',
   legacy_chat: 'Conversación General',
-  executive_reasoning: 'Razonamiento Ejecutivo',
+  executive_reasoning: 'Análisis Ejecutivo',
   product_identity: 'Identidad del Asistente',
+  conversation_gateway: 'Asistente Conversacional',
   business_knowledge: 'Conocimiento Institucional',
+}
+
+export const GATEWAY_DECISION_LABELS: Record<string, string> = {
+  conversation: 'Asistente Conversacional',
+  business: 'Canal Empresarial',
+}
+
+export const REASONING_ROUTE_LABELS: Record<string, string> = {
+  conversation: 'Conversación',
+  institutional_knowledge: 'Conocimiento institucional',
+  business_pipeline: 'Canal empresarial',
+  executive_analysis: 'Análisis ejecutivo',
+  clarification: 'Aclaración',
+  legacy: 'Conversación general',
 }
 
 export const QUERY_TYPE_LABELS: Record<string, string> = {
@@ -26,7 +41,7 @@ export const QUERY_TYPE_LABELS: Record<string, string> = {
   DATA_COVERAGE: 'Cobertura temporal de datos',
   DATASET_INFO: 'Información del conjunto de datos',
   SYSTEM_CAPABILITIES: 'Capacidades del sistema',
-  capability_discovery: 'Descubrimiento de capacidades',
+  capability_discovery: 'Exploración de Capacidades',
   UNSUPPORTED: 'No soportada',
 }
 
@@ -69,6 +84,15 @@ export const METRIC_TOOLTIPS: Record<string, string> = {
 
 export const es = {
   nav: {
+    mainSection: 'Plataforma',
+    debugSection: 'Modo técnico',
+    platformTagline: 'Inteligencia Empresarial',
+    enterpriseAi: 'Enterprise AI',
+    enterpriseAiDesc: 'Conversación ejecutiva con la IA',
+    executiveDashboard: 'Panel Ejecutivo',
+    executiveDashboardDesc: 'Indicadores clave del negocio',
+    financialSimulator: 'Simulador Financiero',
+    financialSimulatorDesc: 'Inversión, costos y escenarios',
     assistant: 'Asistente IA',
     performance: 'Rendimiento',
     analytics: 'Analítica Empresarial',
@@ -87,6 +111,81 @@ export const es = {
     simulator: 'Simulador',
     decisionCenter: 'Centro de Decisiones',
     platformActive: 'Plataforma activa',
+  },
+  experience: {
+    telemetry: 'Navegación',
+    period: 'Periodo',
+    scenario: 'Escenario',
+    company: 'Empresa',
+    platformUnified: 'Una sola experiencia empresarial con IA al centro',
+    openEnterpriseAi: 'Ir a Enterprise AI',
+    explainWithAi: 'Explicar con IA',
+    continueConversation: 'Continuar conversación',
+    pinnedQueries: 'Consultas fijadas',
+    recentQueries: 'Consultas recientes',
+    suggestedForContext: 'Sugerencias según contexto',
+    pin: 'Fijar consulta',
+    unpin: 'Desfijar consulta',
+  },
+  executive: {
+    analyzeWithAi: 'Analizar con IA',
+    ai: {
+      eyebrow: 'Enterprise AI',
+      title: 'Conversación con Inteligencia Empresarial',
+      contextHint: 'Cada respuesta se basa en evidencia corporativa disponible.',
+      emptyTitle: '¿Qué decisión empresarial quieres iluminar hoy?',
+      emptySubtitle:
+        'Plantea consultas sobre clientes, proveedores, actividad y tendencias. Recibirás lecturas claras, accionables y trazables.',
+      emptyPrompt: 'Comienza con una pregunta directa o pide orientación estratégica.',
+      inputPlaceholder: 'Escriba su consulta empresarial…',
+      send: 'Consultar',
+    },
+    dashboard: {
+      eyebrow: 'Panel Ejecutivo',
+      title: 'Panorama del negocio',
+      subtitle:
+        'Indicadores esenciales para orientar decisiones. Cada tarjeta puede abrir un análisis conversacional con la IA.',
+      keyIndicators: 'Indicadores clave',
+      clients: 'Entidades empresariales',
+      clientsHint: 'Universo de clientes y proveedores registrados',
+      activity: 'Actividad reciente',
+      activityHint: 'Consultas analizadas en la plataforma',
+      operationalHealth: 'Salud operativa',
+      coverage: 'Cobertura',
+      risks: 'Exposición conversacional',
+      risksHint: 'Consultas fuera del canal empresarial estructurado',
+      alerts: 'Señales analíticas',
+      alertsHint: 'Promedio de alertas por ciclo de razonamiento',
+      efficiency: 'Eficiencia sin IA',
+      efficiencyHint: 'Consultas resueltas con lógica determinista',
+      recentFocus: 'Temas de mayor interés',
+      recentFocusHint: 'Consultas más frecuentes de la organización',
+      noActivityYet: 'Aún no hay actividad registrada. Inicie una conversación en Enterprise AI.',
+    },
+    financial: {
+      eyebrow: 'Simulador Financiero',
+      title: 'Modelo de inversión en inteligencia',
+      subtitle:
+        'Proyección de costos, escenarios de adopción e infraestructura. Experiencia preparada para la fase de cierre financiero.',
+      investmentOverview: 'Resumen de inversión',
+      monthlyCost: 'Costo mensual',
+      annualCost: 'Costo anual proyectado',
+      roi: 'ROI estimado',
+      llmSavings: 'Ahorro por eficiencia',
+      usageModel: 'Modelo de uso',
+      users: 'Usuarios',
+      queries: 'Consultas',
+      costPerUser: 'Costo por usuario',
+      costPerSession: 'Costo por sesión',
+      infrastructure: 'Infraestructura',
+      providers: 'Proveedores LLM',
+      scenarios: 'Escenarios comparativos',
+      scenariosHint: 'Proyección por escala de adopción — valores en consolidación.',
+      comingSoon: 'Próximamente',
+      roadmapTitle: 'Experiencia financiera en evolución',
+      roadmapHint:
+        'Esta vista consolidará ROI, TCO, escenarios de proveedores e infraestructura para la presentación ejecutiva del proyecto.',
+    },
   },
   common: {
     refresh: 'Actualizar',
@@ -461,11 +560,11 @@ export const es = {
     parameters: 'Parámetros del escenario',
     users: 'Usuarios',
     queriesPerUser: 'Consultas por usuario/día',
-    pipelinePct: '% Business Pipeline',
-    knowledgePct: '% Knowledge Service',
-    memoryPct: '% Conversation Memory',
-    executivePct: '% Executive Reasoning',
-    legacyPct: '% Legacy Chat',
+    pipelinePct: '% Canal empresarial',
+    knowledgePct: '% Servicio de conocimiento',
+    memoryPct: '% Memoria conversacional',
+    executivePct: '% Razonamiento ejecutivo',
+    legacyPct: '% Conversación general',
     provider: 'Proveedor LLM',
     concurrency: 'Concurrencia',
     peakHours: 'Horas pico',
@@ -520,9 +619,9 @@ export const es = {
     costBreakdown: 'Desglose de costos',
     costPerUser: 'Costo por usuario',
     costPerSession: 'Costo por sesión',
-    knowledgeRuntime: 'Knowledge Runtime',
-    businessPipeline: 'Business Pipeline',
-    executiveReasoning: 'Executive Reasoning',
+    knowledgeRuntime: 'Conocimiento institucional',
+    businessPipeline: 'Canal empresarial',
+    executiveReasoning: 'Análisis ejecutivo',
     providerComparison: 'Comparativa OpenAI vs Claude vs Ollama',
     savingsTitle: 'Ahorro operativo',
     avoidedCost: 'Costo evitado',
@@ -726,6 +825,32 @@ export const es = {
     responseTime: 'Tiempo de respuesta',
     responseTimeTooltip: 'Duración total percibida para entregar la respuesta.',
   },
+  executiveInsight: {
+    title: 'Análisis IA',
+    executiveSummary: 'Resumen Ejecutivo',
+    findings: 'Hallazgos',
+    interpretation: 'Interpretación',
+    risks: 'Riesgos Potenciales',
+    opportunities: 'Oportunidades',
+    recommendations: 'Recomendaciones',
+    limitations: 'Limitaciones',
+    nextAnalyses: 'Próximos análisis',
+  },
+  businessCopilot: {
+    title: 'Próximos análisis sugeridos',
+    why: '¿Por qué?',
+  },
+  executiveAdvisor: {
+    title: 'Agenda Ejecutiva',
+    subtitle: 'Hoy recomendaría revisar:',
+    subtitleUpdated: 'Recomendaciones actualizadas según tu última consulta.',
+    greetingUpdated: 'Agenda actualizada',
+    emptyGreeting: 'Buenos días.',
+    priorityLabel: 'Prioridad',
+    analyze: 'Analizar',
+    dailyAgenda: 'Agenda del día',
+    loadError: 'No fue posible cargar la Agenda Ejecutiva.',
+  },
   chat: {
     pipeline: 'Canal',
     queryType: 'Tipo de consulta',
@@ -745,6 +870,61 @@ export const es = {
     sessionId: 'Identificador de sesión',
     pendingClarification: 'Aclaración pendiente',
     clarificationResolved: 'Aclaración resuelta',
+    gatewayRoute: 'Ruta del gateway',
+  },
+  reasoning: {
+    title: 'Razonamiento empresarial',
+    intent: 'Intención',
+    confidence: 'Confianza',
+    recommendedRoute: 'Ruta recomendada',
+    actualRoute: 'Ruta utilizada',
+    match: 'Coincide',
+  },
+  evidencePlanner: {
+    title: 'Enterprise Evidence Planner',
+    goal: 'Objetivo',
+    evidence: 'Evidencias requeridas',
+    capabilities: 'Capabilities sugeridas',
+    coverage: 'Cobertura',
+  },
+  evidenceOrchestrator: {
+    title: 'Enterprise Evidence Package',
+    goal: 'Objetivo',
+    evidence: 'Evidencias obtenidas',
+    executed: 'Capabilities ejecutadas',
+    coverage: 'Cobertura final',
+    missing: 'Evidencia faltante',
+  },
+  planExecutor: {
+    title: 'Capability Plan Executor',
+    strategy: 'Strategy',
+    capability: 'Capability',
+    coverage: 'Coverage',
+    fallbackAvoided: 'Fallback evitado',
+    time: 'Tiempo',
+    partialNote: 'Ejecución parcial: cobertura entre 60% y 80%.',
+  },
+  capabilityReasoner: {
+    title: 'Capability Reasoner',
+    goal: 'Objetivo detectado',
+    candidates: 'Capabilities candidatas',
+    coverage: 'Cobertura estimada',
+    plan: 'Plan recomendado',
+  },
+  capabilityAudit: {
+    title: 'Auditoría de razonamiento de capabilities',
+    intent: 'Intención',
+    selectedCapability: 'Capability elegida',
+    finalRoute: 'Ruta final',
+    evaluation: 'Evaluación',
+  },
+  governance: {
+    title: 'Gobernanza de razonamiento',
+    decision: 'Decisión',
+    governed: 'Gobernada',
+    fallback: 'Respaldo',
+    pipelineSkipped: 'Canal omitido',
+    rule: 'Regla',
   },
   export: {
     question: 'Pregunta',
@@ -761,6 +941,37 @@ export const es = {
 export function translateHandledBy(value: string | null | undefined): string {
   if (!value) return '—'
   return HANDLED_BY_LABELS[value] ?? value
+}
+
+/** Etiqueta de ruta del Enterprise Reasoning Engine (modo debug). */
+export function translateReasoningRoute(value: unknown): string {
+  if (typeof value !== 'string' || !value) return '—'
+  return REASONING_ROUTE_LABELS[value] ?? value
+}
+
+/** Etiqueta de ruta del Conversation Intelligence Gateway (modo debug). */
+export function resolveGatewayRouteLabel(
+  metadata: Record<string, unknown> | undefined,
+  handledBy: string | null | undefined,
+): string {
+  const decision = metadata?.gateway_decision
+  if (decision === 'conversation') {
+    return GATEWAY_DECISION_LABELS.conversation
+  }
+  if (handledBy === 'legacy_chat') {
+    return 'Legacy'
+  }
+  if (
+    handledBy === 'business_pipeline' ||
+    handledBy === 'conversation_memory' ||
+    handledBy === 'slot_clarification'
+  ) {
+    return GATEWAY_DECISION_LABELS.business
+  }
+  if (decision === 'business') {
+    return GATEWAY_DECISION_LABELS.business
+  }
+  return translateHandledBy(handledBy)
 }
 
 /** Traduce query_type del API. */

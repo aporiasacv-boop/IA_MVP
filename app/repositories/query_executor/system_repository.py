@@ -75,6 +75,35 @@ class SystemRepository:
 
         return track_database_call(_query)
 
+    def get_kpis(self) -> dict:
+        def _query() -> dict:
+            row = self.session.execute(
+                text(
+                    """
+                    WITH resumen AS (
+                        SELECT COALESCE(SUM(movimientos), 0) AS movimientos
+                        FROM mv_resumen_mensual
+                    )
+                    SELECT
+                        resumen.movimientos,
+                        (SELECT COUNT(*) FROM fact_cliente) AS clientes,
+                        (SELECT COUNT(*) FROM fact_proveedor) AS proveedores,
+                        (SELECT COUNT(*) FROM fact_cuenta) AS cuentas,
+                        (SELECT COUNT(*) FROM fact_divisa) AS divisas
+                    FROM resumen
+                    """
+                )
+            ).mappings().one()
+            return {
+                "movimientos": int(row["movimientos"]),
+                "clientes": int(row["clientes"]),
+                "proveedores": int(row["proveedores"]),
+                "cuentas": int(row["cuentas"]),
+                "divisas": int(row["divisas"]),
+            }
+
+        return track_database_call(_query)
+
     def get_system_capabilities(self) -> dict:
         return {
             key: True

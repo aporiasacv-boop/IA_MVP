@@ -22,7 +22,7 @@ describe('spanish localization catalog', () => {
     expect(translateHandledBy('conversation_memory')).toBe('Memoria Conversacional')
     expect(translateHandledBy('slot_clarification')).toBe('Aclaración de Consulta')
     expect(translateHandledBy('guided_fallback')).toBe('Asistencia Guiada')
-    expect(translateHandledBy('capability_discovery')).toBe('Descubrimiento de Capacidades')
+    expect(translateHandledBy('capability_discovery')).toBe('Exploración de Capacidades')
     expect(translateHandledBy('legacy_chat')).toBe('Conversación General')
     expect(translateHandledBy(null)).toBe('—')
     expect(translateHandledBy('unknown_route')).toBe('unknown_route')
@@ -123,7 +123,7 @@ describe('spanish localization catalog', () => {
   })
 
   it('covers all handled_by keys', () => {
-    expect(Object.keys(HANDLED_BY_LABELS)).toHaveLength(9)
+    expect(Object.keys(HANDLED_BY_LABELS)).toHaveLength(10)
     expect(translateHandledBy('business_knowledge')).toBe('Conocimiento Institucional')
   })
 })

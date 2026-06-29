@@ -1,51 +1,62 @@
-# Olnatura Intelligence — Plataforma de Inteligencia Empresarial
+# Olnatura Intelligence
 
-**Versión:** Release Candidate 1 (RC1)  
-**Estado:** Listo para pruebas funcionales con usuarios
-
----
-
-## Descripción
-
-Olnatura Intelligence es una plataforma de asistencia empresarial que combina:
-
-- **Canal híbrido determinístico + IA** — Business Pipeline, conocimiento institucional, memoria conversacional y razonamiento ejecutivo
-- **Capa de datos empresariales** — entidades, ontología, perfiles canónicos
-- **Observabilidad y FinOps** — costos reales por consulta, ahorro por canal
-- **Simulación y decisiones ejecutivas** — escenarios, recomendaciones con evidencia
+**Versión:** v1.0.0 Release Candidate (RC1)  
+**Estado:** Listo para piloto empresarial
 
 ---
 
-## Arquitectura (resumen)
+## Qué es
+
+Olnatura Intelligence es una plataforma de inteligencia empresarial orientada al Director General. Permite consultar el negocio en lenguaje natural, obtener análisis accionables y visualizar indicadores clave en un entorno unificado en español.
+
+La plataforma combina datos operativos, conocimiento institucional y asistencia conversacional para responder preguntas de negocio con evidencia y contexto ejecutivo.
+
+---
+
+## Capacidades
+
+| Módulo | Descripción |
+|--------|-------------|
+| **Enterprise AI** | Asistente principal: conversación híbrida, memoria de sesión y respuestas empresariales en lenguaje natural. |
+| **Executive Insight** | Capa de análisis IA que enriquece cada respuesta con hallazgos ejecutivos. |
+| **Business Copilot** | Sugerencias de próximos análisis según la consulta y el contexto. |
+| **Executive Advisor** | Agenda Ejecutiva con recomendaciones priorizadas del día y actualización tras cada conversación. |
+| **Executive Dashboard** | Panel ejecutivo con KPIs, agenda compacta y acceso directo al asistente. |
+| **Financial Simulator** | Simulación de escenarios financieros y evaluación de decisiones. |
+
+---
+
+## Arquitectura
 
 ```
-Usuario → Frontend React (español)
-              ↓
-         FastAPI (app/main.py)
-              ↓
-    ┌─────────┴─────────┐
-    │   Hybrid Chat     │ ← canal principal
-    └─────────┬─────────┘
-              ↓
- Pipeline │ Knowledge │ Memory │ Reasoning │ Legacy
-              ↓
-    Operational Metrics / FinOps
-              ↓
-    Simulation Engine → Enterprise Decision Engine
+Usuario (navegador)
+        ↓
+   Frontend React + Vite
+        ↓
+   API FastAPI (app/)
+        ↓
+   Canal híbrido de conversación
+        ↓
+   ┌─────┴─────┬─────────────┬──────────────────┐
+   Datos      Conocimiento   Análisis ejecutivo  Simulación
+   empresariales institucional  (Insight, Copilot,  y decisiones
+                               Advisor)
 ```
 
-Documentación detallada: [`docs/architecture_rc1.md`](docs/architecture_rc1.md)
+- **Backend:** Python 3.12+, FastAPI, PostgreSQL, Alembic.
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS.
+- **IA:** proveedores configurables (Ollama local, OpenAI, Anthropic) con modo mock para desarrollo.
 
 ---
 
-## Inicio rápido
+## Cómo ejecutar
 
 ### Requisitos
 
 - Python 3.12+
 - Node.js 20+
-- PostgreSQL (puerto 5432/5433 según `.env`)
-- Ollama (opcional, para LLM local)
+- PostgreSQL
+- Ollama (opcional, para modelos locales)
 
 ### Backend
 
@@ -53,8 +64,12 @@ Documentación detallada: [`docs/architecture_rc1.md`](docs/architecture_rc1.md)
 python -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
 copy .env.example .env
+# Editar .env con credenciales de base de datos
+
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --port 8001 --reload
 ```
+
+API disponible en: http://localhost:8001
 
 ### Frontend
 
@@ -64,94 +79,64 @@ npm install
 npm run dev
 ```
 
-Abrir: http://localhost:5173
+Aplicación en: http://localhost:5173
+
+El proxy de desarrollo redirige las peticiones `/api` al backend en el puerto 8001.
 
 ### Tests
 
 ```powershell
-python -m pytest -q
-```
+# Backend
+.\.venv\Scripts\python.exe -m pytest -q
 
-**Última ejecución RC1:** 740 tests passed · cobertura backend ~87%
-
----
-
-## Estructura del proyecto
-
-```
-IA_MVP/
-├── app/                    # Backend FastAPI
-│   ├── api/routes/         # Routers HTTP
-│   ├── services/           # Chat híbrido, NLP, generación
-│   ├── enterprise_knowledge_service/  # EKS (conocimiento canónico)
-│   ├── operational_metrics/           # FinOps canónico
-│   ├── simulation_engine/
-│   ├── enterprise_decision/
-│   └── ...
-├── frontend/               # React + Vite + Tailwind
-├── tests/                  # Pytest
-├── docs/                   # Documentación técnica
-├── alembic/                # Migraciones BD
-└── scripts/                # ETL y utilidades
+# Frontend
+cd frontend
+npm run test
+npx tsc -b
+npm run build
 ```
 
 ---
 
-## APIs principales
+## Variables de entorno
 
-| Dominio | Prefijo | Documentación |
-|---------|---------|---------------|
-| Chat híbrido | `POST /api/chat/hybrid` | `docs/hybrid_chat_router_v1.md` |
-| FinOps | `/api/finops/*` | `docs/operational_metrics_finops_v2.md` |
-| Conocimiento | `/api/enterprise-knowledge/*` | `docs/enterprise_knowledge_service_v1.md` |
-| Simulación | `/api/simulation/*` | `docs/simulation_decision_engine_v1.md` |
-| Decisiones | `/api/decision/*` | `docs/enterprise_decision_engine_v1.md` |
-| Métricas | `/api/metrics/*` | `docs/observability_v1.md` |
+### Backend (`.env`)
 
-Catálogo completo: [`docs/api_catalog_rc1.md`](docs/api_catalog_rc1.md)
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Conexión PostgreSQL |
+| `OLLAMA_BASE_URL`, `OLLAMA_MODEL` | Modelo local vía Ollama |
+| `LLM_PROVIDER` | Proveedor principal (`mock`, `ollama`, `openai`, `anthropic`) |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | OpenAI (si aplica) |
+| `ANTHROPIC_API_KEY`, `CLAUDE_MODEL` | Anthropic (si aplica) |
+| `EXECUTIVE_INSIGHT_ENABLED` | Habilita análisis IA en respuestas |
+| `BUSINESS_COPILOT_ENABLED` | Habilita sugerencias de próximos análisis |
+| `EXECUTIVE_ADVISOR_ENABLED` | Habilita Agenda Ejecutiva |
+| `DEBUG` | Modo depuración del backend |
 
----
+### Frontend (`frontend/.env`)
 
-## Frontend — pantallas activas
-
-| Ruta | Pantalla |
-|------|----------|
-| `/` | Asistente IA |
-| `/rendimiento` | Rendimiento |
-| `/analytics` | Analítica Empresarial |
-| `/audit` | Auditoría Operacional |
-| `/entidades` | Entidades Empresariales |
-| `/canonicas` | Identidad Canónica |
-| `/perfiles` | Perfiles de Comportamiento |
-| `/ontologia` | Ontología Empresarial |
-| `/conocimiento` | Servicio de Conocimiento |
-| `/objetos-conocimiento` | Objetos EKO |
-| `/razonamiento` | Razonamiento Empresarial |
-| `/intencion-semantica` | Intención Semántica |
-| `/evidencia` | Paquete de Evidencia |
-| `/simulador` | Simulador |
-| `/centro-decisiones` | Centro de Decisiones |
-| `/finops` | FinOps |
+| Variable | Descripción |
+|----------|-------------|
+| `VITE_API_BASE_URL` | URL del API (vacío en dev usa proxy a `:8001`) |
+| `VITE_USE_HYBRID_CHAT` | Usar canal híbrido (`true` por defecto) |
+| `VITE_DEBUG_MODE` | Muestra paneles técnicos de depuración (`false` en producción) |
 
 ---
 
-## Release Candidate 1
+## Roadmap
 
-Ver [`docs/release_candidate_1.md`](docs/release_candidate_1.md) para arquitectura final, checklists, riesgos y limitaciones.
+El roadmap de ingeniería queda **cerrado** con esta release candidate. Las siguientes iteraciones surgirán exclusivamente de:
 
----
+- uso real durante el piloto empresarial
+- métricas y datos de producción
+- feedback del Director General
+- necesidades operativas del negocio
 
-## Roadmap post-RC1
-
-1. Pruebas funcionales con usuarios piloto
-2. Autenticación y autorización (RBAC)
-3. Deprecación progresiva de APIs legacy (`/api/chat`, `/api/kpis`, `/api/ai-costs`)
-4. Persistencia de métricas in-memory en BD
-5. Consolidación de motores `DeterministicResponseEngine` duplicados
-6. CORS y hardening de seguridad para producción
+No se planifican sprints de arquitectura ni de construcción de producto hasta contar con evidencia del piloto.
 
 ---
 
-## Licencia y propiedad
+## Licencia
 
-Uso interno Olnatura, S.A. de C.V.
+Uso interno — Olnatura, S.A. de C.V.

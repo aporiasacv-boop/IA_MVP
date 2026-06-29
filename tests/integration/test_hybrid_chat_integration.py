@@ -48,6 +48,32 @@ def test_integration_hybrid_business_pipeline_count_clientes(
     assert 3 <= len(data["suggestions"]["questions"]) <= 5
     assert data["metadata"]["suggested_questions_generated"] is True
     assert data["metadata"]["suggested_questions_count"] >= 3
+    assert data["metadata"].get("insight_generated") is True
+    assert "executive_insight" in data["metadata"]
+    assert data["metadata"].get("proposals_generated") is True
+    assert "business_copilot_proposals" in data["metadata"]
+    assert data["metadata"]["executive_insight"]["executive_summary"]
+
+
+def test_integration_hybrid_executive_insight_preserves_deterministic_answer(
+    integration_client: TestClient,
+) -> None:
+    response = integration_client.post(
+        "/api/chat/hybrid",
+        json={"message": "¿Cuántos clientes existen?"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    deterministic_answer = data["answer"]
+    assert "clientes registrados" in deterministic_answer
+    assert data["metadata"].get("insight_generated") is True
+    insight = data["metadata"]["executive_insight"]
+    assert insight["business_interpretation"]
+    second = integration_client.post(
+        "/api/chat/hybrid",
+        json={"message": "¿Cuántos clientes existen?"},
+    ).json()
+    assert second["answer"] == deterministic_answer
 
 
 def test_integration_hybrid_business_pipeline_count_proveedores(
@@ -162,12 +188,18 @@ def test_integration_hybrid_product_identity_que_puedes_hacer(
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "product_identity"
-    assert data["handled_by"] != "guided_fallback"
-    assert data["handled_by"] != "legacy_chat"
+    metadata = data["metadata"]
+    if metadata.get("reasoning_governed"):
+        assert metadata["pipeline_skipped"] is True
+        assert metadata["governance_route"] == "institutional_knowledge"
+        assert data["handled_by"] in {"product_identity", "business_knowledge"}
+    else:
+        assert data["handled_by"] == "conversation_gateway"
+        assert metadata["gateway_decision"] == "conversation"
+        assert metadata["gateway_reason"] == "capabilities"
     assert data["success"] is True
     assert "Olnatura Intelligence" in data["answer"]
-    assert "response_time_ms" in data["metadata"]
+    assert "response_time_ms" in metadata
 
 
 def test_integration_hybrid_guided_fallback_ambiguous_negocio(
@@ -179,8 +211,9 @@ def test_integration_hybrid_guided_fallback_ambiguous_negocio(
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "guided_fallback"
-    assert data["metadata"]["fallback_type"] == "AMBIGUOUS"
+    assert data["handled_by"] == "conversation_gateway"
+    assert data["metadata"]["gateway_decision"] == "conversation"
+    assert data["metadata"]["gateway_reason"] == "executive_general"
 
 
 def test_integration_hybrid_dataset_info_data_types(
@@ -238,3 +271,32 @@ def test_integration_hybrid_legacy_chat_conversational_question(
     assert data["success"] is True
     assert data["answer"]
     assert "response_mode" in data["metadata"]
+
+
+def test_integration_hybrid_kpis_uses_business_pipeline(
+    integration_client: TestClient,
+) -> None:
+    response = integration_client.post(
+        "/api/chat/hybrid",
+        json={"message": "KPIs"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["handled_by"] == "business_pipeline"
+    assert data["success"] is True
+    assert data["metadata"]["query_type"] == "KPIS"
+    assert "movimientos" in data["answer"].lower()
+
+
+def test_integration_hybrid_resumen_junio_uses_executive_reasoning(
+    integration_client: TestClient,
+) -> None:
+    response = integration_client.post(
+        "/api/chat/hybrid",
+        json={"message": "Resumen junio"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["handled_by"] == "executive_reasoning"
+    assert data["success"] is True
+    assert data["answer"]

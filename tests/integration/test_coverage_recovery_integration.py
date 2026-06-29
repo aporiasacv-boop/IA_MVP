@@ -8,12 +8,25 @@ from app.coverage_recovery.patterns import (
     DATASET_INFO_QUERIES,
     REGRESSION_BUSINESS_QUERIES,
 )
-from app.product_identity.matcher import is_identity_question
 from app.database.database import SessionLocal
 from app.main import app
 
 
 pytestmark = pytest.mark.integration
+
+_GOVERNED_INSTITUTIONAL_HANDLERS = frozenset({"product_identity", "business_knowledge"})
+
+
+def _assert_capability_discovery_response(data: dict) -> None:
+    metadata = data["metadata"]
+    if metadata.get("reasoning_governed"):
+        assert metadata["pipeline_skipped"] is True
+        assert metadata["governance_route"] == "institutional_knowledge"
+        assert data["handled_by"] in _GOVERNED_INSTITUTIONAL_HANDLERS
+    else:
+        assert data["handled_by"] == "conversation_gateway"
+        assert metadata["gateway_decision"] == "conversation"
+    assert data["handled_by"] != "guided_fallback"
 
 
 @pytest.fixture(scope="module")
@@ -39,13 +52,22 @@ def test_integration_data_coverage_queries(recovery_client: TestClient, question
     assert data["handled_by"] != "guided_fallback"
 
 
+_GATEWAY_DATASET_INFO_QUERIES = frozenset({
+    "¿Qué información tienes?",
+})
+
+
 @pytest.mark.parametrize("question", DATASET_INFO_QUERIES)
 def test_integration_dataset_info_queries(recovery_client: TestClient, question: str) -> None:
     response = recovery_client.post("/api/chat/hybrid", json={"message": question})
     assert response.status_code == 200
     data = response.json()
-    assert data["handled_by"] == "business_pipeline"
-    assert data["metadata"]["query_type"] == "DATASET_INFO"
+    if question in _GATEWAY_DATASET_INFO_QUERIES:
+        assert data["handled_by"] == "conversation_gateway"
+        assert data["metadata"]["gateway_decision"] == "conversation"
+    else:
+        assert data["handled_by"] == "business_pipeline"
+        assert data["metadata"]["query_type"] == "DATASET_INFO"
     assert data["handled_by"] != "guided_fallback"
 
 
@@ -57,11 +79,7 @@ def test_integration_capability_discovery_queries(
     response = recovery_client.post("/api/chat/hybrid", json={"message": question})
     assert response.status_code == 200
     data = response.json()
-    if is_identity_question(question):
-        assert data["handled_by"] == "product_identity"
-    else:
-        assert data["handled_by"] == "business_knowledge"
-    assert data["handled_by"] != "guided_fallback"
+    _assert_capability_discovery_response(data)
 
 
 @pytest.mark.parametrize(

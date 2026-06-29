@@ -117,6 +117,15 @@ class BusinessQueryExecutor:
                 metadata=metadata,
             )
 
+        if query_type == BusinessQueryType.KPIS:
+            kpis = self._system_repository.get_kpis()
+            return BusinessQueryResult(
+                query_type=query_type.value,
+                success=True,
+                data=kpis,
+                metadata=metadata,
+            )
+
         return self._failure(
             query_type,
             metadata,

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ChatMessage } from '../../types/chat'
-import { es, translateHandledBy, translateQueryType } from '../../i18n/spanish'
+import { es, resolveGatewayRouteLabel, translateHandledBy, translateQueryType } from '../../i18n/spanish'
 
 interface HybridTechnicalDetailsProps {
   message: ChatMessage
@@ -18,6 +18,10 @@ export function HybridTechnicalDetails({ message }: HybridTechnicalDetailsProps)
   if (!hybrid) return null
 
   const rows = [
+    {
+      label: es.chat.gatewayRoute,
+      value: resolveGatewayRouteLabel(hybrid.rawMetadata, hybrid.handledBy),
+    },
     { label: es.chat.pipeline, value: translateHandledBy(hybrid.handledBy) },
     {
       label: es.chat.queryType,

@@ -14,3 +14,4 @@ class BusinessOperation(StrEnum):
     SYSTEM_INFO = "SYSTEM_INFO"
     DATA_COVERAGE = "DATA_COVERAGE"
     DATASET_INFO = "DATASET_INFO"
+    KPIS = "KPIS"

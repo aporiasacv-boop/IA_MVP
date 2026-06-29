@@ -82,6 +82,12 @@ class BusinessQueryPlanner:
                 filters=self._serialize_filters(filters),
             )
 
+        if operation == BusinessOperation.KPIS:
+            return BusinessQuery(
+                query_type=BusinessQueryType.KPIS,
+                filters=self._serialize_filters(filters),
+            )
+
         return BusinessQuery(
             query_type=BusinessQueryType.UNSUPPORTED,
             filters=self._serialize_filters(filters),

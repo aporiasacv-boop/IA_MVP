@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useChatApi } from './useChatApi'
 import { chatSessionManager } from '../services/chatSessionManager'
+import { enterpriseExperienceStore } from '../enterpriseExperience/store'
 import * as chatApi from '../services/chatApi'
 
 vi.mock('../services/performanceStore', () => ({
@@ -12,6 +13,7 @@ vi.mock('../services/performanceStore', () => ({
 describe('useChatApi multi-turn', () => {
   beforeEach(() => {
     chatSessionManager.resetForTests()
+    enterpriseExperienceStore._resetForTests()
     vi.restoreAllMocks()
     vi.stubGlobal('crypto', {
       randomUUID: () => 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',

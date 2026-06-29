@@ -232,15 +232,14 @@ export function mapHybridChatResultToMessage(response: HybridChatResult, id: str
 
 
 
+  const conversationUxApplied = response.metadata?.conversation_ux_applied === true
+
   const suppressFollowUp =
-
-    chatSessionManager.isPendingClarification() ||
-
-    response.handled_by === 'slot_clarification' ||
-
-    response.handled_by === 'capability_discovery' ||
-
-    response.handled_by === 'guided_fallback'
+    !conversationUxApplied &&
+    (chatSessionManager.isPendingClarification() ||
+      response.handled_by === 'slot_clarification' ||
+      response.handled_by === 'capability_discovery' ||
+      response.handled_by === 'guided_fallback')
 
 
 

@@ -1,0 +1,30 @@
+REASONING_PROMPT_MARKER = "OLNATURA_ENTERPRISE_REASONING_ENGINE_V1"
+
+ROUTE_CONVERSATION = "conversation"
+ROUTE_INSTITUTIONAL_KNOWLEDGE = "institutional_knowledge"
+ROUTE_BUSINESS_PIPELINE = "business_pipeline"
+ROUTE_EXECUTIVE_ANALYSIS = "executive_analysis"
+ROUTE_CLARIFICATION = "clarification"
+ROUTE_LEGACY = "legacy"
+
+VALID_ROUTES = frozenset({
+    ROUTE_CONVERSATION,
+    ROUTE_INSTITUTIONAL_KNOWLEDGE,
+    ROUTE_BUSINESS_PIPELINE,
+    ROUTE_EXECUTIVE_ANALYSIS,
+    ROUTE_CLARIFICATION,
+    ROUTE_LEGACY,
+})
+
+INTENT_GREETING = "greeting"
+INTENT_CASUAL = "casual_conversation"
+INTENT_SOCIAL = "social_conversation"
+INTENT_IDENTITY = "identity"
+INTENT_CAPABILITIES = "capabilities"
+INTENT_HELP = "help"
+INTENT_INSTITUTIONAL = "institutional_knowledge"
+INTENT_BUSINESS_QUERY = "business_query"
+INTENT_EXECUTIVE_ANALYSIS = "executive_analysis"
+INTENT_CLARIFICATION = "clarification"
+INTENT_LEGACY = "legacy"
+INTENT_UNKNOWN = "unknown"

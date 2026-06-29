@@ -117,6 +117,16 @@ OPERATION_SYNONYMS: dict[BusinessOperation, tuple[str, ...]] = {
         "fecha maxima",
         "fecha máxima",
     ),
+    BusinessOperation.KPIS: (
+        "kpis",
+        "kpi",
+        "indicadores clave",
+        "indicadores generales",
+        "metricas generales",
+        "muestrame los kpis",
+        "mostrar kpis",
+        "mostrar los kpis",
+    ),
     BusinessOperation.DATASET_INFO: (
         "que tipos de datos tienes",
         "que tipos de datos",

@@ -1,5 +1,12 @@
 import pytest
 
+from app.capabilities.business_pipeline_capability import BusinessPipelineCapability
+from app.capabilities.business_resolution_capability import BusinessResolutionCapability
+from app.capabilities.conversational_enrichment_capability import ConversationalEnrichmentCapability
+from app.capabilities.executive_reasoning_capability import ExecutiveReasoningCapability
+from app.capabilities.guided_fallback_capability import GuidedFallbackCapability
+from app.capabilities.institutional_knowledge_capability import InstitutionalKnowledgeCapability
+from app.capabilities.conversation_context_capability import ConversationContextCapability
 from app.conversation_memory.context_resolver import ContextResolver, is_new_question
 from app.conversation_memory.schemas import ConversationContext
 from app.conversation_memory.service import ConversationMemoryService, memory_metrics
@@ -7,6 +14,7 @@ from app.conversation_memory.slot_value_parser import parse_slot_value
 from app.domain.entities import BusinessEntity
 from app.domain.operations import BusinessOperation
 from app.query_engine.business_query import BusinessQuery
+from app.capabilities.business_understanding_capability import BusinessUnderstandingCapability
 from app.query_engine.query_planner import BusinessQueryPlanner
 from app.query_engine.query_types import BusinessQueryType
 from app.query_executor.query_result import BusinessQueryResult
@@ -161,16 +169,26 @@ def test_memory_service_roundtrip(memory_service: ConversationMemoryService) -> 
 
 
 @pytest.fixture
-def memory_router() -> HybridChatRouter:
-    intent_builder = SemanticIntentBuilder()
-    query_planner = BusinessQueryPlanner()
-    query_executor = MagicMock()
-    query_executor.execute.return_value = BusinessQueryResult(
+def shared_conversation_context() -> ConversationContextCapability:
+    return ConversationContextCapability(
+        conversation_memory_service=ConversationMemoryService(),
+        context_resolver=ContextResolver(),
+    )
+
+
+@pytest.fixture
+def memory_query_executor() -> MagicMock:
+    executor = MagicMock()
+    executor.execute.return_value = BusinessQueryResult(
         query_type="COUNT_PROVEEDORES",
         success=True,
         data={"total": 10},
     )
-    response_engine = DeterministicResponseEngine()
+    return executor
+
+
+@pytest.fixture
+def memory_router(shared_conversation_context: ConversationContextCapability) -> HybridChatRouter:
     legacy_handler = MagicMock(
         return_value=ChatResponse(
             intent="UNKNOWN",
@@ -180,20 +198,55 @@ def memory_router() -> HybridChatRouter:
         )
     )
     return HybridChatRouter(
-        intent_builder,
-        query_planner,
-        query_executor,
-        response_engine,
         legacy_handler,
-        slot_clarification_engine=SlotClarificationEngine(),
-        conversation_memory_service=ConversationMemoryService(),
-        context_resolver=ContextResolver(),
+        conversation_context=shared_conversation_context,
     )
 
 
-def test_router_clarification_then_cliente_resolution(memory_router: HybridChatRouter) -> None:
+@pytest.fixture
+def shared_business_resolution(
+    memory_query_executor: MagicMock,
+) -> BusinessResolutionCapability:
+    return BusinessResolutionCapability(
+        memory_query_executor,
+        DeterministicResponseEngine(),
+    )
+
+
+@pytest.fixture
+def shared_business_understanding() -> BusinessUnderstandingCapability:
+    return BusinessUnderstandingCapability(
+        SemanticIntentBuilder(),
+        BusinessQueryPlanner(),
+    )
+
+
+@pytest.fixture
+def memory_pipeline(
+    memory_router: HybridChatRouter,
+    shared_conversation_context: ConversationContextCapability,
+    shared_business_understanding: BusinessUnderstandingCapability,
+    shared_business_resolution: BusinessResolutionCapability,
+) -> BusinessPipelineCapability:
+    return BusinessPipelineCapability(
+        memory_router,
+        ConversationalEnrichmentCapability(),
+        shared_conversation_context,
+        shared_business_understanding,
+        shared_business_resolution,
+        InstitutionalKnowledgeCapability(),
+        ExecutiveReasoningCapability(),
+        GuidedFallbackCapability(),
+        slot_clarification_engine=SlotClarificationEngine(),
+    )
+
+
+def test_router_clarification_then_cliente_resolution(
+    memory_pipeline: BusinessPipelineCapability,
+    memory_query_executor: MagicMock,
+) -> None:
     session_id = "clarify-session"
-    first = memory_router.route(
+    first = memory_pipeline.execute(
         "¿Cuál fue la transacción más alta?",
         session_id=session_id,
     )
@@ -201,31 +254,34 @@ def test_router_clarification_then_cliente_resolution(memory_router: HybridChatR
     assert first.handled_by == "slot_clarification"
     assert first.metadata["missing_slots"] == ["cliente_codigo"]
 
-    second = memory_router.route("C001", session_id=session_id)
+    second = memory_pipeline.execute("C001", session_id=session_id)
 
     assert second.handled_by == "conversation_memory"
     assert second.metadata["clarification_resolved"] is True
     assert second.metadata["query_type"] == "MAX_TRANSACCION_CLIENTE"
-    memory_router._query_executor.execute.assert_called_once()
+    memory_query_executor.execute.assert_called_once()
 
 
-def test_router_count_then_follow_up_proveedores(memory_router: HybridChatRouter) -> None:
+def test_router_count_then_follow_up_proveedores(
+    memory_pipeline: BusinessPipelineCapability,
+    memory_query_executor: MagicMock,
+) -> None:
     session_id = "followup-session"
-    memory_router._query_executor.execute.return_value = BusinessQueryResult(
+    memory_query_executor.execute.return_value = BusinessQueryResult(
         query_type="COUNT_CLIENTES",
         success=True,
         data={"total": 50},
     )
 
-    first = memory_router.route("¿Cuántos clientes existen?", session_id=session_id)
+    first = memory_pipeline.execute("¿Cuántos clientes existen?", session_id=session_id)
     assert first.handled_by == "business_pipeline"
 
-    memory_router._query_executor.execute.return_value = BusinessQueryResult(
+    memory_query_executor.execute.return_value = BusinessQueryResult(
         query_type="COUNT_PROVEEDORES",
         success=True,
         data={"total": 20},
     )
-    second = memory_router.route("¿Y proveedores?", session_id=session_id)
+    second = memory_pipeline.execute("¿Y proveedores?", session_id=session_id)
 
     assert second.handled_by == "conversation_memory"
     assert second.metadata["resolution_type"] == "follow_up"

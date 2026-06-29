@@ -59,7 +59,13 @@ const mockAnalytics = {
       success_rate: 1,
     },
   ],
-  report: { coverage_gap_score: 10, recommendations: [] },
+  report: {
+    coverage_score: 80,
+    success_rate: 0.9,
+    deterministic_rate: 0.8,
+    legacy_rate: 0.1,
+    top_routes: [],
+  },
 }
 
 const mockAudit = {

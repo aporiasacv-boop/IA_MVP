@@ -1,0 +1,4 @@
+HANDLED_BY_CONVERSATION_GATEWAY = "conversation_gateway"
+
+GATEWAY_DECISION_CONVERSATION = "conversation"
+GATEWAY_DECISION_BUSINESS = "business"

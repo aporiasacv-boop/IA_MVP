@@ -51,6 +51,25 @@ export interface ChatApiResponse {
   prompt_metrics: PromptMetrics
 }
 
+export interface BusinessCopilotProposal {
+  title: string
+  rationale: string
+  actionLabel: string
+  query: string
+  proposalType: string
+}
+
+export interface ExecutiveInsight {
+  executiveSummary?: string
+  businessInterpretation?: string
+  findings?: string[]
+  possibleRisks: string[]
+  opportunities?: string[]
+  recommendations: string[]
+  limitations?: string[]
+  nextAnalyses?: string[]
+}
+
 export interface HybridMessageMeta {
   handledBy: string
   queryType?: string
